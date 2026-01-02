@@ -5,18 +5,32 @@ window.onload = function() {
 
 // --- Navigation Logic ---
 function showSection(sectionId) {
+    // 1. Hide all sections
     document.querySelectorAll('.content-section').forEach(sec => sec.classList.add('d-none'));
-    document.getElementById('section-' + sectionId).classList.remove('d-none');
+    
+    // 2. Show the target section
+    const target = document.getElementById('section-' + sectionId);
+    if (target) {
+        target.classList.remove('d-none');
+    }
+
+    // 3. Highlight the Sidebar Link
     document.querySelectorAll('.list-group-item').forEach(item => item.classList.remove('active-link'));
-    event.currentTarget.classList.add('active-link');
+    const activeLink = document.querySelector(`a[href="#${sectionId}"]`);
+    if (activeLink) {
+        activeLink.classList.add('active-link');
+    }
 }
 
 // --- The "Network" Background Animation ---
 function initNetworkAnimation() {
     const canvas = document.getElementById('canvas-network');
+    if (!canvas) return; // Safety check
+
     const ctx = canvas.getContext('2d');
     let width, height;
     let particles = [];
+    
     const particleCount = 60; 
     const connectionDistance = 150; 
     const moveSpeed = 0.5;
@@ -34,12 +48,14 @@ function initNetworkAnimation() {
             this.vy = (Math.random() - 0.5) * moveSpeed;
             this.size = Math.random() * 2 + 1;
         }
+
         update() {
             this.x += this.vx;
             this.y += this.vy;
             if (this.x < 0 || this.x > width) this.vx *= -1;
             if (this.y < 0 || this.y > height) this.vy *= -1;
         }
+
         draw() {
             ctx.fillStyle = 'rgba(13, 202, 240, 0.5)';
             ctx.beginPath();
@@ -50,6 +66,7 @@ function initNetworkAnimation() {
 
     function init() {
         resize();
+        particles = [];
         for (let i = 0; i < particleCount; i++) {
             particles.push(new Particle());
         }
@@ -67,7 +84,7 @@ function initNetworkAnimation() {
                 const dist = Math.sqrt(dx * dx + dy * dy);
                 if (dist < connectionDistance) {
                     ctx.beginPath();
-                    ctx.strokeStyle = `rgba(13, 202, 240, ${1 - dist/connectionDistance})`;
+                    ctx.strokeStyle = `rgba(13, 202, 240, ${1 - dist/connectionDistance})`; 
                     ctx.lineWidth = 0.5;
                     ctx.moveTo(p.x, p.y);
                     ctx.lineTo(p2.x, p2.y);
@@ -83,9 +100,8 @@ function initNetworkAnimation() {
     animate();
 }
 
-/* ================= THE ORACLE (WORKER EDITION) ================= */
+/* ================= THE ORACLE (WORKER + MEMORY EDITION) ================= */
 
-// --- THE ORACLE (MEMORY EDITION) ---
 const WORKER_URL = "https://mathis-oracle.drewandtatumn.workers.dev"; 
 
 // Global Variable to store conversation history
@@ -98,8 +114,10 @@ function handleEnter(e) {
 async function sendMessage() {
     const inputField = document.getElementById('user-input');
     const chatHistoryDiv = document.getElementById('chat-history');
+    
+    if (!inputField || !chatHistoryDiv) return;
+    
     const userText = inputField.value.trim();
-
     if (!userText) return;
 
     // 1. Display User Message
@@ -112,7 +130,7 @@ async function sendMessage() {
     inputField.value = "";
     chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
 
-    // 2. Add to History Array (Gemini Format)
+    // 2. Add to History Array
     conversationHistory.push({
         role: "user",
         parts: [{ text: userText }]
@@ -128,14 +146,20 @@ async function sendMessage() {
     `;
 
     try {
-        // 4. Send the WHOLE history to the Worker
+        // 4. Send History to Worker
         const response = await fetch(WORKER_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ history: conversationHistory }) 
         });
 
+        if (!response.ok) {
+            throw new Error(`Worker Error: ${response.status}`);
+        }
+
         const data = await response.json();
+        
+        // Remove loading
         const loadingEl = document.getElementById(loadingId);
         if (loadingEl) loadingEl.remove();
 
@@ -151,20 +175,23 @@ async function sendMessage() {
                 </div>
             `;
 
-            // 6. Add AI Response to History Array
+            // 6. Save AI Response
             conversationHistory.push({
                 role: "model",
                 parts: [{ text: aiText }]
             });
 
         } else {
-            throw new Error("No response");
+            throw new Error("No valid text in response");
         }
 
     } catch (error) {
         const loadingEl = document.getElementById(loadingId);
-        if(loadingEl) {
-             loadingEl.innerHTML = "Error: Connection lost.";
+        if (loadingEl) {
+             loadingEl.innerHTML = `
+                <span class="badge bg-danger text-white mb-1">Error</span><br>
+                Connection Failed. The Oracle is offline.
+            `;
         }
         console.error(error);
     }
