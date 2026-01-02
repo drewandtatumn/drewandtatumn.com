@@ -114,12 +114,26 @@ h1, h2, h3, h4, h5, .sidebar-heading, .navbar-brand {
 
 /* --- Chat Interface --- */
 .chat-card {
-    min-height: 500px; /* Start substantial */
-    max-height: 80vh;  /* Stop before hitting browser edge */
+    height: auto;         /* Let content dictate height */
+    min-height: 400px;    /* Start with a decent size */
+    max-height: 80vh;     /* Stop growing before hitting the screen edge */
     display: flex;
     flex-direction: column;
+    transition: height 0.3s ease; /* Smooth growth */
 }
 
+/* The container for the messages */
+#chat-history {
+    flex: 1 1 auto;       /* Grow to fill space, but allow shrinking if needed */
+    overflow-y: auto;     /* Scroll ONLY if we hit the max-height limit */
+    min-height: 250px;    /* Ensure there is always a drop zone for messages */
+    
+    /* Scrollbar Styling for Chrome/Safari */
+    scrollbar-width: thin;
+    scrollbar-color: #0dcaf0 #1a1a2e;
+}
+
+/* Message Bubbles */
 .ai-message {
     background: rgba(13, 202, 240, 0.15);
     border-left: 3px solid #0dcaf0;
@@ -127,6 +141,7 @@ h1, h2, h3, h4, h5, .sidebar-heading, .navbar-brand {
     border-radius: 4px;
     color: #e0e0e0;
     margin-bottom: 15px;
+    word-wrap: break-word; /* Prevent long words from breaking layout */
 }
 
 .user-message {
@@ -137,10 +152,29 @@ h1, h2, h3, h4, h5, .sidebar-heading, .navbar-brand {
     text-align: right;
     color: #fff;
     margin-bottom: 15px;
+    align-self: flex-end; /* Push to right */
+    max-width: 85%;       /* Don't span full width */
+    word-wrap: break-word;
 }
 
-.input-group { width: 100%; flex-wrap: nowrap; }
-#user-input { min-width: 0; }
+/* Input Area */
+.input-group { 
+    width: 100%; 
+    flex-wrap: nowrap; 
+    margin-top: auto; /* Push to bottom if content is short */
+}
+
+#user-input { 
+    min-width: 0; 
+}
+
+/* Mobile Tweaks */
+@media (max-width: 768px) {
+    .chat-card {
+        min-height: 300px; /* Start smaller on phones */
+        max-height: 75vh;  /* Leave room for keyboard */
+    }
+}
 
 /* --- Stat Cards --- */
 .stat-card {
