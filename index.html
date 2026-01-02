@@ -4,9 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mathis Global Industries</title>
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -15,6 +21,12 @@
     <div class="d-flex" id="wrapper">
         
         <div id="sidebar-wrapper">
+            <div class="text-end p-3 d-md-none">
+                <button class="btn btn-sm btn-outline-danger" id="menu-close">
+                    <i class="fas fa-times"></i> Close
+                </button>
+            </div>
+
             <div class="sidebar-heading">
                 <i class="fas fa-atom fa-2x mb-2 text-info"></i><br>
                 M.G.I.<br>
@@ -81,27 +93,21 @@
             <div class="container-fluid content-section d-none" id="section-ai">
                 <div class="row">
                     <div class="col-md-8 offset-md-2">
-                        
                         <h2 class="text-white mb-4">The Oracle</h2>
-            
-                        <div class="card bg-glass" style="height: 60vh;">
-                            <div class="card-body d-flex flex-column">
-                                
+                        <div class="card bg-glass chat-card">
+                            <div class="card-body d-flex flex-column h-100">
                                 <div id="chat-history" class="flex-grow-1 overflow-auto mb-3 p-2">
                                     <div class="ai-message mb-2">
                                         <span class="badge bg-info text-dark mb-1">Oracle</span><br>
-                                        Systems online. Connected to Gemini 3.0 Flash. How can I assist?
+                                        Systems online. How can I assist?
                                     </div>
                                 </div>
-            
                                 <div class="input-group">
                                     <input type="text" id="user-input" class="form-control bg-transparent text-white border-secondary" placeholder="Ask the Oracle..." onkeypress="handleEnter(event)">
                                     <button class="btn btn-info" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
                                 </div>
-            
                             </div>
                         </div>
-            
                     </div>
                 </div>
             </div>
@@ -113,8 +119,8 @@
                         <div class="card bg-glass">
                             <div class="card-body text-center py-5">
                                 <i class="fas fa-satellite-dish fa-4x text-warning mb-3"></i>
-                                <h3>Scanning Horizon...</h3>
-                                <p class="text-secondary">Is it good mowing weather? Is the pollen count lethal?</p>
+                                <h3>Scanning Horizon...beep</h3>
+                                <p class="text-secondary">Is it good mowing weather? Is the pollen count honeybee-optimal?</p>
                             </div>
                         </div>
                     </div>
@@ -129,7 +135,7 @@
                             <div class="card-body">
                                 <h5><i class="fas fa-receipt text-success me-2"></i> Receipt Assassin</h5>
                                 <p class="text-secondary small mt-2">
-                                    Automated AI-driven expense tracking. If you buy it, we track it.
+                                    Automated AI-driven expense tracking.
                                 </p>
                                 <span class="badge border border-success text-success">Operational</span>
                             </div>
@@ -140,7 +146,7 @@
                             <div class="card-body">
                                 <h5><i class="fas fa-leaf text-success me-2"></i> Mowing Best Ops</h5>
                                 <p class="text-secondary small mt-2">
-                                    CRM and Agronomy cheat sheets for world domination (of lawns).
+                                    CRM and Agronomy cheat sheets.
                                 </p>
                                 <span class="badge border border-warning text-warning">In Development</span>
                             </div>
@@ -149,10 +155,15 @@
                 </div>
             </div>
 
+            <footer class="text-center text-secondary py-4 mt-5 border-top border-secondary" style="border-color: rgba(255,255,255,0.1) !important;">
+                <small>&copy; 2026 Mathis Global Industries. All Systems Nominal.</small><br>
+                <small style="font-size: 0.7rem;">Powered by Cloudflare, Gemini, and B-Vitamins.</small>
+            </footer>
+
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="js/script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
