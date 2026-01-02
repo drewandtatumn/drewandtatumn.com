@@ -79,17 +79,29 @@
             </div>
 
             <div class="container-fluid content-section d-none" id="section-ai">
-                <h2 class="text-white mb-4">The Oracle <small class="text-muted fs-6">(Powered by Gemini)</small></h2>
-                <div class="card bg-glass">
-                    <div class="card-body">
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle"></i> 
-                            AI Modules initializing... Please configure your API Key in settings (Coming Soon).
+                <div class="row">
+                    <div class="col-md-8 offset-md-2">
+                        
+                        <h2 class="text-white mb-4">The Oracle</h2>
+            
+                        <div class="card bg-glass" style="height: 60vh;">
+                            <div class="card-body d-flex flex-column">
+                                
+                                <div id="chat-history" class="flex-grow-1 overflow-auto mb-3 p-2">
+                                    <div class="ai-message mb-2">
+                                        <span class="badge bg-info text-dark mb-1">Oracle</span><br>
+                                        Systems online. Connected to Gemini 3.0 Flash. How can I assist?
+                                    </div>
+                                </div>
+            
+                                <div class="input-group">
+                                    <input type="text" id="user-input" class="form-control bg-transparent text-white border-secondary" placeholder="Ask the Oracle..." onkeypress="handleEnter(event)">
+                                    <button class="btn btn-info" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+                                </div>
+            
+                            </div>
                         </div>
-                        <div class="chat-placeholder text-center py-5 text-secondary">
-                            <i class="fas fa-robot fa-4x mb-3"></i>
-                            <p>Waiting for neural link...</p>
-                        </div>
+            
                     </div>
                 </div>
             </div>
