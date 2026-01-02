@@ -1,6 +1,19 @@
 window.onload = function() {
     console.log("Mathis Global Industries: Online.");
-    initNetworkAnimation(); // Start the background effect
+    
+    // 1. Initialize Animation
+    initNetworkAnimation(); 
+
+    // 2. Initialize Menu Toggle (The Missing Piece!)
+    const menuToggle = document.getElementById("menu-toggle");
+    const wrapper = document.getElementById("wrapper");
+    
+    if (menuToggle && wrapper) {
+        menuToggle.addEventListener("click", function(e) {
+            e.preventDefault();
+            wrapper.classList.toggle("toggled");
+        });
+    }
 };
 
 // --- Navigation Logic ---
