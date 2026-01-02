@@ -131,7 +131,9 @@
                         </div>
                     </div>
                 </div>
-            </div> <div class="container-fluid content-section d-none" id="section-ai">
+            </div>
+
+            <div class="container-fluid content-section d-none" id="section-ai">
                 <div class="row">
                     <div class="col-md-8 offset-md-2">
                         <h2 class="text-white mb-4">The Oracle</h2>
@@ -153,34 +155,35 @@
                 </div>
             </div>
 
-<div class="container-fluid content-section d-none" id="section-weather">
+            <div class="container-fluid content-section d-none" id="section-weather">
                 <h2 class="text-white mb-4">Atmospheric Conditions</h2>
                 
                 <div class="row g-4">
-                        <div class="col-lg-7">
-                            <div class="card bg-glass h-100 mb-5"> <div class="card-header border-0 bg-transparent d-flex justify-content-between align-items-center">
-                                    <span class="text-info" id="sector-label"><i class="fas fa-satellite me-2"></i> SECTOR: DFW</span>
-                                    <div class="btn-group">
-                                        <button class="btn btn-sm btn-outline-info active" id="btn-dfw" onclick="updateSector('dfw')">DFW (HQ)</button>
-                                        <button class="btn btn-sm btn-outline-secondary" id="btn-slc" onclick="updateSector('slc')">SLC (Remote)</button>
-                                    </div>
+                    <div class="col-lg-7">
+                        <div class="card bg-glass h-100 mb-5"> 
+                            
+                            <div class="card-header border-0 bg-transparent d-flex justify-content-between align-items-center">
+                                <span class="text-info" id="sector-label"><i class="fas fa-satellite me-2"></i> SECTOR: DFW</span>
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-outline-info active" id="btn-dfw" onclick="updateSector('dfw')">DFW (HQ)</button>
+                                    <button class="btn btn-sm btn-outline-secondary" id="btn-slc" onclick="updateSector('slc')">SLC (Remote)</button>
                                 </div>
-                        
-                                <div class="card-body p-0">
-                                    <div class="ratio ratio-16x9 border-bottom border-secondary">
-                                        <iframe id="weather-video" src="" title="Live Feed" allowfullscreen></iframe>
-                                    </div>
+                            </div>
+                            
+                            <div class="card-body p-0">
+                                <div class="ratio ratio-16x9 border-bottom border-secondary">
+                                    <iframe id="weather-video" src="" title="Live Feed" allowfullscreen></iframe>
                                 </div>
-                        
-                                <div class="card-header border-0 bg-transparent py-2">
-                                    <small class="text-warning text-uppercase letter-spacing-2" style="font-size: 0.7rem;">
-                                        <i class="fas fa-radar me-2"></i> Live Doppler Radar
-                                    </small>
-                                </div>
-                        
-                                <div class="card-body p-0">
-                                    <iframe id="weather-radar" class="w-100 rounded-bottom" style="height: 350px; border: none;" src=""></iframe>
-                                </div>
+                            </div>
+                            
+                            <div class="card-header border-0 bg-transparent py-2">
+                                <small class="text-warning text-uppercase letter-spacing-2" style="font-size: 0.7rem;">
+                                    <i class="fas fa-radar me-2"></i> Live Doppler Radar
+                                </small>
+                            </div>
+                            
+                            <div class="card-body p-0">
+                                <iframe id="weather-radar" class="w-100 rounded-bottom" style="height: 350px; border: none;" src=""></iframe>
                             </div>
                         </div>
                     </div>
@@ -234,7 +237,7 @@
                                                 <i class="fas fa-sync-alt"></i>
                                             </button>
                                         </div>
-                                    
+                                        
                                         <p class="card-text text-light small" id="weather-ai-analysis" style="line-height: 1.6;">
                                             <i class="fas fa-circle-notch fa-spin"></i> Establishing Uplink to OpenWeatherMap Satellites...
                                         </p>
@@ -244,7 +247,7 @@
 
                         </div>
                     </div>
-                </div>
+                </div> 
             </div>
 
             <div class="container-fluid content-section d-none" id="section-projects">
