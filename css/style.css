@@ -17,16 +17,51 @@ body {
     background: radial-gradient(circle at bottom, #1a1a2e 0%, #000000 100%);
 }
 
-/* --- Sidebar --- */
-#wrapper { display: flex; min-height: 100vh; }
+/* --- Layout & Sidebar (Updated for Mobile) --- */
+#wrapper {
+    display: flex;
+    min-height: 100vh;
+    overflow-x: hidden; /* Prevent horizontal scroll when sidebar slides */
+}
 
 #sidebar-wrapper {
+    min-height: 100vh;
     width: 260px;
     background: rgba(255, 255, 255, 0.03); /* Subtle transparency */
     backdrop-filter: blur(10px);
     border-right: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
     flex-direction: column;
+    
+    /* Mobile First: Hidden by default */
+    margin-left: -260px; 
+    transition: margin 0.25s ease-out;
+    position: fixed; /* Lock it in place on mobile */
+    z-index: 1000;
+    height: 100%;
+}
+
+/* On Desktop (Screens wider than 768px), show the sidebar */
+@media (min-width: 768px) {
+    #sidebar-wrapper {
+        margin-left: 0;
+        position: relative; /* Sit next to content on desktop */
+    }
+    
+    #page-content-wrapper {
+        min-width: 0;
+        width: 100%;
+    }
+    
+    /* When Toggled on Desktop, hide it */
+    #wrapper.toggled #sidebar-wrapper {
+        margin-left: -260px;
+    }
+}
+
+/* When Toggled on Mobile, show it */
+#wrapper.toggled #sidebar-wrapper {
+    margin-left: 0;
 }
 
 .sidebar-heading {
@@ -53,7 +88,10 @@ body {
 }
 
 /* --- Content Area --- */
-#page-content-wrapper { width: 100%; position: relative; }
+#page-content-wrapper { 
+    width: 100%; 
+    position: relative; 
+}
 
 .content-section { padding: 40px; }
 
@@ -95,6 +133,46 @@ body {
     transform: scale(1.05);
 }
 
+/* --- Chat Interface Styles --- */
+.ai-message {
+    background: rgba(13, 202, 240, 0.1);
+    border-left: 3px solid #0dcaf0;
+    padding: 10px;
+    border-radius: 4px;
+    color: #e0e0e0;
+    margin-bottom: 15px;
+}
+
+.user-message {
+    background: rgba(255, 255, 255, 0.05);
+    border-right: 3px solid #888;
+    padding: 10px;
+    border-radius: 4px;
+    text-align: right;
+    color: #fff;
+    margin-bottom: 15px;
+}
+
+#chat-history::-webkit-scrollbar {
+    width: 8px;
+}
+#chat-history::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 4px;
+}
+
+/* Fix Chat Input Overflow */
+.input-group {
+    width: 100%;
+    max-width: 100%; 
+    flex-wrap: nowrap; /* Keep button next to input */
+}
+
+#user-input {
+    min-width: 0; /* Allows the input to shrink if needed */
+}
+
+/* --- Utilities --- */
 .d-none { display: none !important; }
 .fade-in { animation: fadeIn 0.8s ease-in; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
