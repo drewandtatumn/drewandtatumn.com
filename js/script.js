@@ -101,8 +101,11 @@ function initNetworkAnimation() {
 
 /* ================= THE ORACLE (WORKER EDITION) ================= */
 
-// The URL of your Cloudflare Worker
-const WORKER_URL = "https://mathis-oracle.drewandtatumn.workers.dev";
+// --- THE ORACLE (MEMORY EDITION) ---
+const WORKER_URL = "https://mathis-oracle.drewandtatumn.workers.dev"; // Your Worker
+
+// Global Variable to store conversation history
+let conversationHistory = [];
 
 function handleEnter(e) {
     if (e.key === 'Enter') sendMessage();
@@ -110,29 +113,76 @@ function handleEnter(e) {
 
 async function sendMessage() {
     const inputField = document.getElementById('user-input');
-    const chatHistory = document.getElementById('chat-history');
+    const chatHistoryDiv = document.getElementById('chat-history');
     const userText = inputField.value.trim();
 
     if (!userText) return;
 
-    // A. Add User Message to Screen
-    chatHistory.innerHTML += `
+    // 1. Display User Message
+    chatHistoryDiv.innerHTML += `
         <div class="user-message">
             <span class="badge bg-secondary mb-1">You</span><br>
             ${userText}
         </div>
     `;
     inputField.value = "";
-    chatHistory.scrollTop = chatHistory.scrollHeight;
+    chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
 
-    // B. Show Loading Indicator
+    // 2. Add to History Array (Gemini Format)
+    conversationHistory.push({
+        role: "user",
+        parts: [{ text: userText }]
+    });
+
+    // 3. Show Loading
     const loadingId = "loading-" + Date.now();
-    chatHistory.innerHTML += `
+    chatHistoryDiv.innerHTML += `
         <div class="ai-message" id="${loadingId}">
             <span class="badge bg-info text-dark mb-1">Oracle</span><br>
-            <i class="fas fa-circle-notch fa-spin"></i> Contacting Mainframe...
+            <i class="fas fa-circle-notch fa-spin"></i> Thinking...
         </div>
     `;
+
+    try {
+        // 4. Send the WHOLE history to the Worker
+        const response = await fetch(WORKER_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ history: conversationHistory }) // Sending History
+        });
+
+        const data = await response.json();
+        document.getElementById(loadingId).remove();
+
+        if (data.candidates && data.candidates[0].content) {
+            const aiText = data.candidates[0].content.parts[0].text;
+            
+            // 5. Display AI Message
+            const formattedText = aiText.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+            chatHistoryDiv.innerHTML += `
+                <div class="ai-message">
+                    <span class="badge bg-info text-dark mb-1">Oracle</span><br>
+                    ${formattedText}
+                </div>
+            `;
+
+            // 6. Add AI Response to History Array
+            conversationHistory.push({
+                role: "model",
+                parts: [{ text: aiText }]
+            });
+
+        } else {
+            throw new Error("No response");
+        }
+
+    } catch (error) {
+        document.getElementById(loadingId).innerHTML = "Error: Connection lost.";
+        console.error(error);
+    }
+    
+    chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+}
 
     // C. Call YOUR Cloudflare Worker
     try {
