@@ -3,20 +3,20 @@
 // --- CONFIGURATION ---
 const WORKER_URL = "https://mathis-oracle.drewandtatumn.workers.dev"; 
 
-// 24/7 Live News Streams (YouTube IDs)
+// 24/7 Live News Streams (YouTube IDs) & Radar Feeds (Windy)
 const SECTORS = {
     dfw: {
         name: "McKinney, TX",
-        // DFW Radar (Windy)
+        // DFW Radar (Windy) - Centered on McKinney
         radarUrl: "https://embed.windy.com/embed2.html?lat=32.8998&lon=-97.0403&detailLat=32.8998&detailLon=-97.0403&width=650&height=450&zoom=9&level=surface&overlay=rain&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=mph&metricTemp=°F&radarRange=-1",
-        // YouTube Embed (Standard)
+        // YouTube Embed (Standard) - FOX 4 Dallas
         videoUrl: "https://www.youtube.com/embed/HkfKsRa9qnE?autoplay=1&mute=1&controls=0&rel=0"
     },
     slc: {
         name: "Salt Lake City, UT",
-        // SLC Radar (Calculated Lat/Lon 40.7608, -111.8910)
+        // SLC Radar (Windy) - Centered on SLC
         radarUrl: "https://embed.windy.com/embed2.html?lat=40.7608&lon=-111.8910&detailLat=40.7608&detailLon=-111.8910&width=650&height=450&zoom=9&level=surface&overlay=rain&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=mph&metricTemp=°F&radarRange=-1",
-        // Nest Cam Embed
+        // Nest Cam Embed - Direct Stream
         videoUrl: "https://video.nest.com/embedded/live/qAupZ0qsW2?autoplay=1"
     }
 };
@@ -96,6 +96,7 @@ function updateSector(sectorKey) {
 
     // 2. Update Video Feed (Dynamic Source: YouTube or Nest)
     const videoFrame = document.getElementById('weather-video');
+    // Check src to prevent unnecessary reloads/flickering
     if (videoFrame.src !== sector.videoUrl) {
         videoFrame.src = sector.videoUrl;
     }
