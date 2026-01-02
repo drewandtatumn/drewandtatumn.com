@@ -1,16 +1,18 @@
+// js/script.js
+
 // --- CONFIGURATION ---
 const WORKER_URL = "https://mathis-oracle.drewandtatumn.workers.dev"; 
 
 // 24/7 Live News Streams (YouTube IDs)
-// DFW: FOX 4 Dallas | SLC: FOX 13 Salt Lake City
+// Updated per user request
 const SECTORS = {
     dfw: {
         name: "McKinney, TX",
-        videoId: "I_80r-46W2k" 
+        videoId: "HkfKsRa9qnE" // DFW Live Feed
     },
     slc: {
         name: "Salt Lake City, UT",
-        videoId: "2L2c-35_3xI"
+        videoId: "ymaZB3c3DT4" // SLC Live Feed
     }
 };
 
