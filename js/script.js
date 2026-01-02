@@ -5,12 +5,8 @@ window.onload = function() {
 
 // --- Navigation Logic ---
 function showSection(sectionId) {
-    // Hide all sections
     document.querySelectorAll('.content-section').forEach(sec => sec.classList.add('d-none'));
-    // Show target
     document.getElementById('section-' + sectionId).classList.remove('d-none');
-    
-    // Update sidebar active state
     document.querySelectorAll('.list-group-item').forEach(item => item.classList.remove('active-link'));
     event.currentTarget.classList.add('active-link');
 }
@@ -19,13 +15,10 @@ function showSection(sectionId) {
 function initNetworkAnimation() {
     const canvas = document.getElementById('canvas-network');
     const ctx = canvas.getContext('2d');
-    
     let width, height;
     let particles = [];
-    
-    // Configuration
-    const particleCount = 60; // How many dots
-    const connectionDistance = 150; // How close to connect lines
+    const particleCount = 60; 
+    const connectionDistance = 150; 
     const moveSpeed = 0.5;
 
     function resize() {
@@ -41,18 +34,14 @@ function initNetworkAnimation() {
             this.vy = (Math.random() - 0.5) * moveSpeed;
             this.size = Math.random() * 2 + 1;
         }
-
         update() {
             this.x += this.vx;
             this.y += this.vy;
-
-            // Bounce off edges
             if (this.x < 0 || this.x > width) this.vx *= -1;
             if (this.y < 0 || this.y > height) this.vy *= -1;
         }
-
         draw() {
-            ctx.fillStyle = 'rgba(13, 202, 240, 0.5)'; // Cyan dots
+            ctx.fillStyle = 'rgba(13, 202, 240, 0.5)';
             ctx.beginPath();
             ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
             ctx.fill();
@@ -68,22 +57,17 @@ function initNetworkAnimation() {
 
     function animate() {
         ctx.clearRect(0, 0, width, height);
-        
-        // Update and draw particles
         particles.forEach((p, index) => {
             p.update();
             p.draw();
-
-            // Connect lines
             for (let j = index + 1; j < particles.length; j++) {
                 const p2 = particles[j];
                 const dx = p.x - p2.x;
                 const dy = p.y - p2.y;
                 const dist = Math.sqrt(dx * dx + dy * dy);
-
                 if (dist < connectionDistance) {
                     ctx.beginPath();
-                    ctx.strokeStyle = `rgba(13, 202, 240, ${1 - dist/connectionDistance})`; // Fade out
+                    ctx.strokeStyle = `rgba(13, 202, 240, ${1 - dist/connectionDistance})`;
                     ctx.lineWidth = 0.5;
                     ctx.moveTo(p.x, p.y);
                     ctx.lineTo(p2.x, p2.y);
@@ -102,7 +86,7 @@ function initNetworkAnimation() {
 /* ================= THE ORACLE (WORKER EDITION) ================= */
 
 // --- THE ORACLE (MEMORY EDITION) ---
-const WORKER_URL = "https://mathis-oracle.drewandtatumn.workers.dev"; // Your Worker
+const WORKER_URL = "https://mathis-oracle.drewandtatumn.workers.dev"; 
 
 // Global Variable to store conversation history
 let conversationHistory = [];
@@ -148,11 +132,12 @@ async function sendMessage() {
         const response = await fetch(WORKER_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ history: conversationHistory }) // Sending History
+            body: JSON.stringify({ history: conversationHistory }) 
         });
 
         const data = await response.json();
-        document.getElementById(loadingId).remove();
+        const loadingEl = document.getElementById(loadingId);
+        if (loadingEl) loadingEl.remove();
 
         if (data.candidates && data.candidates[0].content) {
             const aiText = data.candidates[0].content.parts[0].text;
@@ -177,55 +162,12 @@ async function sendMessage() {
         }
 
     } catch (error) {
-        document.getElementById(loadingId).innerHTML = "Error: Connection lost.";
+        const loadingEl = document.getElementById(loadingId);
+        if(loadingEl) {
+             loadingEl.innerHTML = "Error: Connection lost.";
+        }
         console.error(error);
     }
     
     chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
-}
-
-    // C. Call YOUR Cloudflare Worker
-    try {
-        const response = await fetch(WORKER_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message: userText })
-        });
-
-        if (!response.ok) {
-            throw new Error(`Worker Error: ${response.status}`);
-        }
-
-        const data = await response.json();
-        
-        // Remove loading spinner
-        const loadingMsg = document.getElementById(loadingId);
-        if (loadingMsg) loadingMsg.remove();
-
-        if (data.candidates && data.candidates[0].content) {
-            const aiText = data.candidates[0].content.parts[0].text;
-            const formattedText = aiText.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
-
-            chatHistory.innerHTML += `
-                <div class="ai-message">
-                    <span class="badge bg-info text-dark mb-1">Oracle</span><br>
-                    ${formattedText}
-                </div>
-            `;
-        } else {
-            throw new Error("Invalid response from Oracle");
-        }
-
-    } catch (error) {
-        const loadingMsg = document.getElementById(loadingId);
-        if (loadingMsg) {
-             loadingMsg.innerHTML = `
-                <span class="badge bg-danger text-white mb-1">Error</span><br>
-                Connection Failed. The Oracle is offline.
-            `;
-        }
-        console.error(error);
-    }
-    
-    chatHistory.scrollTop = chatHistory.scrollHeight;
 }
