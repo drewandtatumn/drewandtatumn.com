@@ -157,13 +157,13 @@
                 <h2 class="text-white mb-4">Atmospheric Conditions</h2>
                 
                 <div class="row g-4">
-                    <div class="col-lg-8">
+                    <div class="col-lg-7">
                         <div class="card bg-glass h-100">
                             <div class="card-header border-0 bg-transparent d-flex justify-content-between align-items-center">
-                                <span class="text-info"><i class="fas fa-video me-2"></i> LIVE SURVEILLANCE</span>
-                                <div>
-                                    <button class="btn btn-sm btn-outline-info me-2" onclick="setVideo('dfw')">DFW (HQ)</button>
-                                    <button class="btn btn-sm btn-outline-secondary" onclick="setVideo('slc')">SLC (Remote)</button>
+                                <span class="text-info" id="sector-label"><i class="fas fa-satellite me-2"></i> SECTOR: DFW</span>
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-outline-info active" id="btn-dfw" onclick="updateSector('dfw')">DFW (HQ)</button>
+                                    <button class="btn btn-sm btn-outline-secondary" id="btn-slc" onclick="updateSector('slc')">SLC (Remote)</button>
                                 </div>
                             </div>
                             <div class="card-body p-0">
@@ -174,26 +174,50 @@
                         </div>
                     </div>
 
-                    <div class="col-lg-4">
+                    <div class="col-lg-5">
                         <div class="row g-4 h-100">
                             
                             <div class="col-12">
-                                <div class="card bg-glass text-center p-3">
-                                    <h6 class="text-muted text-uppercase">McKinney Telemetry</h6>
-                                    <div id="weather-display-temp" class="display-3 fw-bold text-white">--°</div>
-                                    <div class="d-flex justify-content-around mt-2">
-                                        <small><i class="fas fa-wind text-info"></i> <span id="weather-display-wind">--</span> mph</small>
-                                        <small><i class="fas fa-tint text-primary"></i> <span id="weather-display-rain">--</span>%</small>
+                                <div class="card bg-glass text-center p-4 h-100">
+                                    <h6 class="text-secondary text-uppercase letter-spacing-2">Current Telemetry</h6>
+                                    
+                                    <div class="d-flex justify-content-center align-items-center my-3">
+                                        <div class="display-3 fw-bold text-white me-3" id="val-temp">--°</div>
+                                        <div class="text-start">
+                                            <div class="text-info small" id="val-condition">SCANNING...</div>
+                                            <div class="text-muted small">FEELS LIKE <span id="val-feels">--°</span></div>
+                                        </div>
+                                    </div>
+
+                                    <hr class="border-secondary opacity-25">
+
+                                    <div class="row text-start mt-3">
+                                        <div class="col-6 mb-3">
+                                            <small class="text-secondary d-block" style="font-size: 0.7rem;">WIND VECTOR</small>
+                                            <span class="text-white fw-bold"><i class="fas fa-wind text-info me-2"></i><span id="val-wind">--</span> mph</span>
+                                        </div>
+                                        <div class="col-6 mb-3">
+                                            <small class="text-secondary d-block" style="font-size: 0.7rem;">PRECIP PROB</small>
+                                            <span class="text-white fw-bold"><i class="fas fa-tint text-primary me-2"></i><span id="val-rain">--</span>%</span>
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="text-secondary d-block" style="font-size: 0.7rem;">SOIL SATURATION</small>
+                                            <span class="fw-bold" id="val-soil-color"><i class="fas fa-water me-2"></i><span id="val-soil">--</span> m³/m³</span>
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="text-secondary d-block" style="font-size: 0.7rem;">BAROMETRIC PRESSURE</small>
+                                            <span class="text-white fw-bold"><i class="fas fa-tachometer-alt text-warning me-2"></i><span id="val-pressure">--</span> hPa</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="col-12">
-                                <div class="card bg-glass h-100 border-info">
+                                <div class="card bg-glass h-100 border-info" style="min-height: 200px;">
                                     <div class="card-body">
-                                        <h5 class="card-title text-info"><i class="fas fa-robot me-2"></i> Oracle Analysis</h5>
-                                        <p class="card-text text-light small" id="weather-ai-analysis">
-                                            <i class="fas fa-circle-notch fa-spin"></i> Establishing Uplink...
+                                        <h5 class="card-title text-info mb-3"><i class="fas fa-brain me-2"></i> Operational Briefing</h5>
+                                        <p class="card-text text-light small" id="weather-ai-analysis" style="line-height: 1.6;">
+                                            <i class="fas fa-circle-notch fa-spin"></i> Establishing Uplink to Open-Meteo Satellites...
                                         </p>
                                     </div>
                                 </div>
