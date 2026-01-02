@@ -168,11 +168,29 @@ h1, h2, h3, h4, h5, .sidebar-heading, .navbar-brand {
     min-width: 0; 
 }
 
-/* Mobile Tweaks */
+/* --- Mobile Tweaks (The Robust Fix) --- */
 @media (max-width: 768px) {
     .chat-card {
-        min-height: 300px; /* Start smaller on phones */
-        max-height: 75vh;  /* Leave room for keyboard */
+        /* On mobile, force a fixed height like a real app */
+        height: 70vh !important; 
+        min-height: 70vh !important;
+        max-height: 70vh !important;
+        body {
+        min-height: 100vh;
+        /* Adds a little breathing room at the bottom for scrolling */
+        padding-bottom: 50px;
+    }
+
+    #chat-history {
+        /* Ensure the text scrolls INSIDE this fixed box */
+        flex: 1;
+        overflow-y: scroll; 
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling on iPhone */
+    }
+    
+    /* Adjust margin so it doesn't hit the very bottom of phone screen */
+    #section-ai {
+        padding-bottom: 80px; 
     }
 }
 
