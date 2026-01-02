@@ -3,50 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drew & Tatumn | Automation & RevOps</title>
+    <title>Mathis Global Industries</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary">
-        <div class="container">
-            <a class="navbar-brand" href="#">D&T Automations</a>
+    <canvas id="canvas-network"></canvas>
+
+    <div class="d-flex" id="wrapper">
+        
+        <div id="sidebar-wrapper">
+            <div class="sidebar-heading">
+                <i class="fas fa-atom fa-2x mb-2 text-info"></i><br>
+                M.G.I.<br>
+                <small class="text-muted" style="font-size: 0.6rem;">EST. 2024</small>
+            </div>
+            <div class="list-group list-group-flush">
+                <a href="#home" class="list-group-item active-link" onclick="showSection('home')">
+                    <i class="fas fa-home me-3"></i> HQ
+                </a>
+                <a href="#ai" class="list-group-item" onclick="showSection('ai')">
+                    <i class="fas fa-brain me-3"></i> The Oracle (AI)
+                </a>
+                <a href="#weather" class="list-group-item" onclick="showSection('weather')">
+                    <i class="fas fa-cloud-sun-rain me-3"></i> SkyNet (Weather)
+                </a>
+                <a href="#projects" class="list-group-item" onclick="showSection('projects')">
+                    <i class="fas fa-code-branch me-3"></i> Projects
+                </a>
+            </div>
         </div>
-    </nav>
 
-    <div class="container hero-section">
-        <h1 class="display-4 fw-bold">Operational Efficiency Solved.</h1>
-        <p class="lead text-secondary">RevOps | Automation | Data Architecture</p>
-        <p>Building systems that save time and recover revenue.</p>
-    </div>
-
-    <div class="container mb-5">
-        <h3 class="mb-4 border-bottom border-secondary pb-2">Active Projects</h3>
-        <div class="row g-4">
+        <div id="page-content-wrapper">
             
-            <div class="col-md-6">
-                <div class="card h-100 p-3">
-                    <div class="card-body">
-                        <h5 class="card-title">🧾 Receipt Assassin</h5>
-                        <p class="card-text text-secondary">
-                            Automated AI-driven expense tracking. 
-                            <br><em>Stack: Google Apps Script, Gemini API, OCR.</em>
-                        </p>
-                        <a href="#" class="btn btn-outline-light btn-sm disabled">Coming Soon</a>
+            <nav class="navbar navbar-dark bg-transparent py-3 px-4">
+                <button class="btn btn-outline-light d-md-none" id="menu-toggle"><i class="fas fa-bars"></i></button>
+                
+                <div class="ms-auto d-flex align-items-center">
+                    <span class="text-secondary me-3 d-none d-sm-block small">Authorized Personnel Only</span>
+                    <a href="https://private.drewandtatumn.com" class="btn btn-login-glow">
+                        <i class="fas fa-lock me-2"></i> Family Login
+                    </a>
+                </div>
+            </nav>
+
+            <div class="container-fluid content-section text-center fade-in" id="section-home">
+                <div class="hero-box">
+                    <h1 class="display-3 fw-bold text-white mb-3">Mathis Global <span class="text-info">Industries</span></h1>
+                    <p class="lead text-secondary mb-4">
+                        "Over-engineering simple household problems since 2024."
+                    </p>
+                    <div class="row justify-content-center mt-5">
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <h3>327</h3>
+                                <small>Lines of Code to turn on a lightbulb</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <h3>99%</h3>
+                                <small>Uptime (When Drew is awake)</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <h3>0</h3>
+                                <small>Gluten Incidents (This week)</small>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-6">
-                <div class="card h-100 p-3">
+            <div class="container-fluid content-section d-none" id="section-ai">
+                <h2 class="text-white mb-4">The Oracle <small class="text-muted fs-6">(Powered by Gemini)</small></h2>
+                <div class="card bg-glass">
                     <div class="card-body">
-                        <h5 class="card-title">🔒 Family Dashboard</h5>
-                        <p class="card-text text-secondary">
-                            Secure household management & budget tracking.
-                            <br><em>Access Restricted: Zero Trust Auth Required.</em>
-                        </p>
-                        <a href="https://private.drewandtatumn.com" class="btn btn-primary btn-sm">Private Access</a>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> 
+                            AI Modules initializing... Please configure your API Key in settings (Coming Soon).
+                        </div>
+                        <div class="chat-placeholder text-center py-5 text-secondary">
+                            <i class="fas fa-robot fa-4x mb-3"></i>
+                            <p>Waiting for neural link...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container-fluid content-section d-none" id="section-weather">
+                <h2 class="text-white mb-4">Atmospheric Conditions</h2>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card bg-glass">
+                            <div class="card-body text-center py-5">
+                                <i class="fas fa-satellite-dish fa-4x text-warning mb-3"></i>
+                                <h3>Scanning Horizon...</h3>
+                                <p class="text-secondary">Is it good mowing weather? Is the pollen count lethal?</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container-fluid content-section d-none" id="section-projects">
+                <h2 class="text-white mb-4">Active Operations</h2>
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="card bg-glass h-100">
+                            <div class="card-body">
+                                <h5><i class="fas fa-receipt text-success me-2"></i> Receipt Assassin</h5>
+                                <p class="text-secondary small mt-2">
+                                    Automated AI-driven expense tracking. If you buy it, we track it.
+                                </p>
+                                <span class="badge border border-success text-success">Operational</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card bg-glass h-100">
+                            <div class="card-body">
+                                <h5><i class="fas fa-leaf text-success me-2"></i> Mowing Best Ops</h5>
+                                <p class="text-secondary small mt-2">
+                                    CRM and Agronomy cheat sheets for world domination (of lawns).
+                                </p>
+                                <span class="badge border border-warning text-warning">In Development</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -54,10 +140,7 @@
         </div>
     </div>
 
-    <footer class="text-center py-4 text-secondary border-top border-secondary mt-5">
-        <small>&copy; 2026 Drew Mathis. Hosted on GitHub Pages.</small>
-    </footer>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/script.js"></script>
 </body>
 </html>
