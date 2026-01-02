@@ -4,15 +4,20 @@
 const WORKER_URL = "https://mathis-oracle.drewandtatumn.workers.dev"; 
 
 // 24/7 Live News Streams (YouTube IDs)
-// Updated per user request
 const SECTORS = {
     dfw: {
         name: "McKinney, TX",
-        videoId: "HkfKsRa9qnE" // DFW Live Feed
+        // DFW Radar (Windy)
+        radarUrl: "https://embed.windy.com/embed2.html?lat=32.8998&lon=-97.0403&detailLat=32.8998&detailLon=-97.0403&width=650&height=450&zoom=9&level=surface&overlay=rain&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=mph&metricTemp=°F&radarRange=-1",
+        // YouTube Embed (Standard)
+        videoUrl: "https://www.youtube.com/embed/HkfKsRa9qnE?autoplay=1&mute=1&controls=0&rel=0"
     },
     slc: {
         name: "Salt Lake City, UT",
-        videoId: "ymaZB3c3DT4" // SLC Live Feed
+        // SLC Radar (Calculated Lat/Lon 40.7608, -111.8910)
+        radarUrl: "https://embed.windy.com/embed2.html?lat=40.7608&lon=-111.8910&detailLat=40.7608&detailLon=-111.8910&width=650&height=450&zoom=9&level=surface&overlay=rain&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=mph&metricTemp=°F&radarRange=-1",
+        // Nest Cam Embed
+        videoUrl: "https://video.nest.com/embedded/live/qAupZ0qsW2?autoplay=1"
     }
 };
 
@@ -89,16 +94,19 @@ function updateSector(sectorKey) {
     document.getElementById('btn-slc').className = `btn btn-sm ${sectorKey === 'slc' ? 'btn-info' : 'btn-outline-secondary'}`;
     document.getElementById('sector-label').innerHTML = `<i class="fas fa-satellite me-2"></i> SECTOR: ${sectorKey.toUpperCase()}`;
 
-    // 2. Update Video Feed
-    const frame = document.getElementById('weather-video');
-    const newSrc = `https://www.youtube.com/embed/${sector.videoId}?autoplay=1&mute=1&controls=0&rel=0`;
-    
-    // Only reload iframe if the source actually changes to prevent flickering
-    if (frame.src !== newSrc) {
-        frame.src = newSrc;
+    // 2. Update Video Feed (Dynamic Source: YouTube or Nest)
+    const videoFrame = document.getElementById('weather-video');
+    if (videoFrame.src !== sector.videoUrl) {
+        videoFrame.src = sector.videoUrl;
     }
 
-    // 3. Fetch Data from Worker
+    // 3. Update Radar Feed
+    const radarFrame = document.getElementById('weather-radar');
+    if (radarFrame && radarFrame.src !== sector.radarUrl) {
+        radarFrame.src = sector.radarUrl;
+    }
+
+    // 4. Fetch Telemetry
     fetchDashboardData(sectorKey);
 }
 
