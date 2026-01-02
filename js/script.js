@@ -48,6 +48,10 @@ function showSection(sectionId) {
     if (window.innerWidth < 768) {
         document.getElementById("wrapper").classList.remove("toggled");
     }
+
+    if (sectionId === 'weather') {
+        initWeather();
+    }
 }
 
 // --- The "Network" Background Animation ---
@@ -225,4 +229,93 @@ async function sendMessage() {
     }
     
     chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+}
+
+/* ================= SKYNET (WEATHER) LOGIC ================= */
+
+// Video Feed IDs (YouTube Live Streams)
+const VIDEO_FEEDS = {
+    dfw: "5_6wP_5rJjE", // WFAA Dallas Live
+    slc: "gC4jD7J_yFw"  // KSL Salt Lake City Live
+};
+
+// 1. Initialize Weather when tab is clicked
+function initWeather() {
+    // Only fetch if we haven't already (prevents API spam)
+    if (document.getElementById('weather-display-temp').innerText === "--°") {
+        setVideo('dfw'); // Default to DFW
+        fetchWeatherData();
+    }
+}
+
+// 2. Video Toggle Logic
+function setVideo(location) {
+    const frame = document.getElementById('weather-video');
+    const id = VIDEO_FEEDS[location] || VIDEO_FEEDS['dfw'];
+    frame.src = `https://www.youtube.com/embed/${id}?autoplay=1&mute=1`;
+}
+
+// 3. Fetch Data from Open-Meteo (No API Key needed for client-side)
+async function fetchWeatherData() {
+    // McKinney Coordinates
+    const lat = 33.1972; 
+    const lon = -96.6398;
+    
+    // Get temperature, wind, and rain probability
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,wind_speed_10m&hourly=precipitation_probability&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=auto`;
+
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        const current = data.current;
+        const currentHour = new Date().getHours();
+        const rainChance = data.hourly.precipitation_probability[currentHour] || 0;
+
+        // Update UI Numbers
+        document.getElementById('weather-display-temp').innerText = Math.round(current.temperature_2m) + "°";
+        document.getElementById('weather-display-wind').innerText = Math.round(current.wind_speed_10m);
+        document.getElementById('weather-display-rain').innerText = rainChance;
+
+        // 4. Send to YOUR Cloudflare Worker for AI Analysis
+        getAiWeatherReport({
+            temp: current.temperature_2m,
+            wind: current.wind_speed_10m,
+            rainChance: rainChance,
+            condition: "WMO Code " + current.weather_code 
+        });
+
+    } catch (e) {
+        console.error("Weather Data Error:", e);
+        document.getElementById('weather-ai-analysis').innerText = "⚠ Telemetry Offline.";
+    }
+}
+
+// 5. Ask The Oracle (via Worker) for the Analysis
+async function getAiWeatherReport(weatherData) {
+    const analysisBox = document.getElementById('weather-ai-analysis');
+    
+    try {
+        const response = await fetch(WORKER_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ 
+                type: "weather_report", // This tells the worker to use the NEW logic
+                weather: weatherData 
+            }) 
+        });
+
+        const json = await response.json();
+        
+        if (json.candidates && json.candidates[0].content) {
+            const text = json.candidates[0].content.parts[0].text;
+            analysisBox.innerText = text;
+        } else {
+            analysisBox.innerText = "Targeting system calibration error.";
+        }
+
+    } catch (e) {
+        console.error("AI Error:", e);
+        analysisBox.innerText = "AI Connection Severed.";
+    }
 }
