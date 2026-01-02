@@ -4,14 +4,24 @@ window.onload = function() {
     // 1. Initialize Animation
     initNetworkAnimation(); 
 
-    // 2. Initialize Menu Toggle (The Missing Piece!)
+    // 2. Initialize Menu Toggle (Open & Close)
     const menuToggle = document.getElementById("menu-toggle");
+    const menuClose = document.getElementById("menu-close");
     const wrapper = document.getElementById("wrapper");
     
+    // Open Logic (Hamburger)
     if (menuToggle && wrapper) {
         menuToggle.addEventListener("click", function(e) {
             e.preventDefault();
             wrapper.classList.toggle("toggled");
+        });
+    }
+
+    // Close Logic (The 'X' Button)
+    if (menuClose && wrapper) {
+        menuClose.addEventListener("click", function(e) {
+            e.preventDefault();
+            wrapper.classList.remove("toggled");
         });
     }
 };
@@ -32,6 +42,11 @@ function showSection(sectionId) {
     const activeLink = document.querySelector(`a[href="#${sectionId}"]`);
     if (activeLink) {
         activeLink.classList.add('active-link');
+    }
+
+    // 4. Auto-Close Sidebar on Mobile when a link is clicked
+    if (window.innerWidth < 768) {
+        document.getElementById("wrapper").classList.remove("toggled");
     }
 }
 
