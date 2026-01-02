@@ -175,11 +175,7 @@ h1, h2, h3, h4, h5, .sidebar-heading, .navbar-brand {
         height: 70vh !important; 
         min-height: 70vh !important;
         max-height: 70vh !important;
-        body {
-        min-height: 100vh;
-        /* Adds a little breathing room at the bottom for scrolling */
-        padding-bottom: 50px;
-    }
+    } /* <--- THIS CLOSING BRACKET WAS MISSING */
 
     #chat-history {
         /* Ensure the text scrolls INSIDE this fixed box */
@@ -187,6 +183,13 @@ h1, h2, h3, h4, h5, .sidebar-heading, .navbar-brand {
         overflow-y: scroll; 
         -webkit-overflow-scrolling: touch; /* Smooth scrolling on iPhone */
     }
+
+    body {
+        min-height: 100vh;
+        /* Adds a little breathing room at the bottom for scrolling */
+        padding-bottom: 50px; 
+    }
+}
     
     /* Adjust margin so it doesn't hit the very bottom of phone screen */
     #section-ai {
