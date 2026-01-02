@@ -231,68 +231,119 @@ async function sendMessage() {
     chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
 }
 
-/* ================= SKYNET (WEATHER) LOGIC ================= */
+/* ================= SKYNET (WEATHER) COMMAND CENTER ================= */
 
-// Video Feed IDs (YouTube Live Streams)
-const VIDEO_FEEDS = {
-    dfw: "5_6wP_5rJjE", // WFAA Dallas Live
-    slc: "gC4jD7J_yFw"  // KSL Salt Lake City Live
+const SECTORS = {
+    dfw: {
+        name: "McKinney, TX",
+        lat: 33.1972,
+        lon: -96.6398,
+        videoId: "5_6wP_5rJjE" // WFAA Dallas
+    },
+    slc: {
+        name: "Salt Lake City, UT",
+        lat: 40.7608,
+        lon: -111.8910,
+        videoId: "gC4jD7J_yFw" // KSL News
+    }
 };
 
-// 1. Initialize Weather when tab is clicked
+let currentSector = 'dfw';
+
+// 1. Triggered when clicking the "SkyNet" Sidebar Tab
 function initWeather() {
-    // Only fetch if we haven't already (prevents API spam)
-    if (document.getElementById('weather-display-temp').innerText === "--°") {
-        setVideo('dfw'); // Default to DFW
-        fetchWeatherData();
-    }
+    // Force an update to the current sector to ensure data loads
+    updateSector(currentSector);
 }
 
-// 2. Video Toggle Logic
-function setVideo(location) {
+// 2. Master Toggle Function (Updates Video + Data + AI)
+function updateSector(sectorKey) {
+    currentSector = sectorKey;
+    const sector = SECTORS[sectorKey];
+
+    // A. Update UI Buttons
+    document.getElementById('btn-dfw').className = `btn btn-sm ${sectorKey === 'dfw' ? 'btn-info' : 'btn-outline-secondary'}`;
+    document.getElementById('btn-slc').className = `btn btn-sm ${sectorKey === 'slc' ? 'btn-info' : 'btn-outline-secondary'}`;
+    document.getElementById('sector-label').innerHTML = `<i class="fas fa-satellite me-2"></i> SECTOR: ${sectorKey.toUpperCase()}`;
+
+    // B. Switch Video Feed
     const frame = document.getElementById('weather-video');
-    const id = VIDEO_FEEDS[location] || VIDEO_FEEDS['dfw'];
-    frame.src = `https://www.youtube.com/embed/${id}?autoplay=1&mute=1`;
+    frame.src = `https://www.youtube.com/embed/${sector.videoId}?autoplay=1&mute=1`;
+
+    // C. Set Loading State
+    document.getElementById('weather-ai-analysis').innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> Analyzing ${sector.name} Telemetry...`;
+    
+    // D. Fetch Data
+    fetchDeepTelemetry(sector);
 }
 
-// 3. Fetch Data from Open-Meteo (No API Key needed for client-side)
-async function fetchWeatherData() {
-    // McKinney Coordinates
-    const lat = 33.1972; 
-    const lon = -96.6398;
-    
-    // Get temperature, wind, and rain probability
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,wind_speed_10m&hourly=precipitation_probability&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=auto`;
+// 3. Fetch "Technical AF" Data
+async function fetchDeepTelemetry(sector) {
+    // We request: Temp, Relative Humidity, Precip Prob, Weather Code, Cloud Cover, Pressure, Wind Speed, Soil Moisture, UV Index
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${sector.lat}&longitude=${sector.lon}&current=temperature_2m,apparent_temperature,precipitation,weather_code,surface_pressure,wind_speed_10m,soil_moisture_0_to_1cm&hourly=precipitation_probability,uv_index&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=auto`;
 
     try {
         const response = await fetch(url);
         const data = await response.json();
         
         const current = data.current;
+        const hourly = data.hourly;
         const currentHour = new Date().getHours();
-        const rainChance = data.hourly.precipitation_probability[currentHour] || 0;
 
-        // Update UI Numbers
-        document.getElementById('weather-display-temp').innerText = Math.round(current.temperature_2m) + "°";
-        document.getElementById('weather-display-wind').innerText = Math.round(current.wind_speed_10m);
-        document.getElementById('weather-display-rain').innerText = rainChance;
+        // --- UPDATE DASHBOARD ---
+        
+        // Main Numbers
+        document.getElementById('val-temp').innerText = Math.round(current.temperature_2m) + "°";
+        document.getElementById('val-feels').innerText = Math.round(current.apparent_temperature) + "°";
+        
+        // Condition Text (Simple mapping)
+        const code = current.weather_code;
+        let condText = "CLEAR";
+        if (code > 0 && code < 4) condText = "PARTLY CLOUDY";
+        if (code >= 45 && code < 50) condText = "FOG DETECTED";
+        if (code >= 50 && code < 80) condText = "PRECIPITATION ACTIVE";
+        if (code >= 80) condText = "STORM CELLS DETECTED";
+        document.getElementById('val-condition').innerText = condText;
 
-        // 4. Send to YOUR Cloudflare Worker for AI Analysis
-        getAiWeatherReport({
+        // Grid Stats
+        document.getElementById('val-wind').innerText = current.wind_speed_10m;
+        document.getElementById('val-rain').innerText = hourly.precipitation_probability[currentHour] || 0;
+        document.getElementById('val-pressure').innerText = Math.round(current.surface_pressure);
+        
+        // Soil Saturation (Critical for Mowing)
+        const soilMoisture = current.soil_moisture_0_to_1cm; // Returns cubic meter water / cubic meter soil
+        document.getElementById('val-soil').innerText = soilMoisture;
+        
+        // Color Code Soil: > 0.35 is Wet/Muddy
+        const soilEl = document.getElementById('val-soil-color');
+        if (soilMoisture > 0.35) {
+            soilEl.className = "fw-bold text-danger"; // Danger red
+        } else if (soilMoisture > 0.25) {
+            soilEl.className = "fw-bold text-warning"; // Caution orange
+        } else {
+            soilEl.className = "fw-bold text-success"; // Good green
+        }
+
+        // --- AI BRIEFING ---
+        getAiBriefing({
+            location: sector.name,
             temp: current.temperature_2m,
+            condition: condText,
             wind: current.wind_speed_10m,
-            rainChance: rainChance,
-            condition: "WMO Code " + current.weather_code 
+            rainChance: hourly.precipitation_probability[currentHour] || 0,
+            soil: soilMoisture,
+            pressure: current.surface_pressure,
+            uv: hourly.uv_index[currentHour] || 0
         });
 
     } catch (e) {
-        console.error("Weather Data Error:", e);
-        document.getElementById('weather-ai-analysis').innerText = "⚠ Telemetry Offline.";
+        console.error("Telemetry Error:", e);
+        document.getElementById('weather-ai-analysis').innerText = "⚠ DATALINK OFFLINE. CHECK CONNECTION.";
     }
 }
 
-// 5. Ask The Oracle (via Worker) for the Analysis
-async function getAiWeatherReport(weatherData) {
+// 4. Send to Worker
+async function getAiBriefing(payload) {
     const analysisBox = document.getElementById('weather-ai-analysis');
     
     try {
@@ -300,8 +351,9 @@ async function getAiWeatherReport(weatherData) {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ 
-                type: "weather_report", // This tells the worker to use the NEW logic
-                weather: weatherData 
+                type: "weather_report", 
+                weather: payload,
+                location: payload.location // Pass the location name to the AI
             }) 
         });
 
@@ -309,13 +361,14 @@ async function getAiWeatherReport(weatherData) {
         
         if (json.candidates && json.candidates[0].content) {
             const text = json.candidates[0].content.parts[0].text;
-            analysisBox.innerText = text;
+            // Format bold text if Gemini sends markdown
+            analysisBox.innerHTML = text.replace(/\*\*(.*?)\*\*/g, '<strong class="text-info">$1</strong>');
         } else {
-            analysisBox.innerText = "Targeting system calibration error.";
+            analysisBox.innerText = "Briefing generation failed.";
         }
 
     } catch (e) {
         console.error("AI Error:", e);
-        analysisBox.innerText = "AI Connection Severed.";
+        analysisBox.innerText = "Secure uplink severed.";
     }
 }
