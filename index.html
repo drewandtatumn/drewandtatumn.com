@@ -153,16 +153,52 @@
                 </div>
             </div>
 
-            <div class="container-fluid content-section d-none" id="section-weather">
+<div class="container-fluid content-section d-none" id="section-weather">
                 <h2 class="text-white mb-4">Atmospheric Conditions</h2>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="card bg-glass">
-                            <div class="card-body text-center py-5">
-                                <i class="fas fa-satellite-dish fa-4x text-warning mb-3"></i>
-                                <h3>Scanning Horizon...beep</h3>
-                                <p class="text-secondary">Is it good mowing weather? Is the pollen count honeybee-optimal?</p>
+                
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <div class="card bg-glass h-100">
+                            <div class="card-header border-0 bg-transparent d-flex justify-content-between align-items-center">
+                                <span class="text-info"><i class="fas fa-video me-2"></i> LIVE SURVEILLANCE</span>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-info me-2" onclick="setVideo('dfw')">DFW (HQ)</button>
+                                    <button class="btn btn-sm btn-outline-secondary" onclick="setVideo('slc')">SLC (Remote)</button>
+                                </div>
                             </div>
+                            <div class="card-body p-0">
+                                <div class="ratio ratio-16x9">
+                                    <iframe id="weather-video" src="" title="Live Feed" allowfullscreen></iframe>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="row g-4 h-100">
+                            
+                            <div class="col-12">
+                                <div class="card bg-glass text-center p-3">
+                                    <h6 class="text-muted text-uppercase">McKinney Telemetry</h6>
+                                    <div id="weather-display-temp" class="display-3 fw-bold text-white">--°</div>
+                                    <div class="d-flex justify-content-around mt-2">
+                                        <small><i class="fas fa-wind text-info"></i> <span id="weather-display-wind">--</span> mph</small>
+                                        <small><i class="fas fa-tint text-primary"></i> <span id="weather-display-rain">--</span>%</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="card bg-glass h-100 border-info">
+                                    <div class="card-body">
+                                        <h5 class="card-title text-info"><i class="fas fa-robot me-2"></i> Oracle Analysis</h5>
+                                        <p class="card-text text-light small" id="weather-ai-analysis">
+                                            <i class="fas fa-circle-notch fa-spin"></i> Establishing Uplink...
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
