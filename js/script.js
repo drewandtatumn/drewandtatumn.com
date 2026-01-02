@@ -98,3 +98,84 @@ function initNetworkAnimation() {
     init();
     animate();
 }
+
+/* ================= THE ORACLE (WORKER EDITION) ================= */
+
+// The URL of your Cloudflare Worker
+const WORKER_URL = "https://mathis-oracle.drewandtatumn.workers.dev";
+
+function handleEnter(e) {
+    if (e.key === 'Enter') sendMessage();
+}
+
+async function sendMessage() {
+    const inputField = document.getElementById('user-input');
+    const chatHistory = document.getElementById('chat-history');
+    const userText = inputField.value.trim();
+
+    if (!userText) return;
+
+    // A. Add User Message to Screen
+    chatHistory.innerHTML += `
+        <div class="user-message">
+            <span class="badge bg-secondary mb-1">You</span><br>
+            ${userText}
+        </div>
+    `;
+    inputField.value = "";
+    chatHistory.scrollTop = chatHistory.scrollHeight;
+
+    // B. Show Loading Indicator
+    const loadingId = "loading-" + Date.now();
+    chatHistory.innerHTML += `
+        <div class="ai-message" id="${loadingId}">
+            <span class="badge bg-info text-dark mb-1">Oracle</span><br>
+            <i class="fas fa-circle-notch fa-spin"></i> Contacting Mainframe...
+        </div>
+    `;
+
+    // C. Call YOUR Cloudflare Worker
+    try {
+        const response = await fetch(WORKER_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: userText })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Worker Error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+        // Remove loading spinner
+        const loadingMsg = document.getElementById(loadingId);
+        if (loadingMsg) loadingMsg.remove();
+
+        if (data.candidates && data.candidates[0].content) {
+            const aiText = data.candidates[0].content.parts[0].text;
+            const formattedText = aiText.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+
+            chatHistory.innerHTML += `
+                <div class="ai-message">
+                    <span class="badge bg-info text-dark mb-1">Oracle</span><br>
+                    ${formattedText}
+                </div>
+            `;
+        } else {
+            throw new Error("Invalid response from Oracle");
+        }
+
+    } catch (error) {
+        const loadingMsg = document.getElementById(loadingId);
+        if (loadingMsg) {
+             loadingMsg.innerHTML = `
+                <span class="badge bg-danger text-white mb-1">Error</span><br>
+                Connection Failed. The Oracle is offline.
+            `;
+        }
+        console.error(error);
+    }
+    
+    chatHistory.scrollTop = chatHistory.scrollHeight;
+}
