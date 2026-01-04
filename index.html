@@ -46,7 +46,7 @@
             <div class="sidebar-heading">
                 <i class="fas fa-atom fa-2x mb-2 text-info"></i><br>
                 M.G.I.<br>
-                <small class="text-muted" style="font-size: 0.6rem;">EST. 2024</small>
+                <small class="text-white" style="font-size: 0.6rem; opacity: 0.8;">EST. 2024</small>
             </div>
             <div class="list-group list-group-flush">
                 <a href="#home" class="list-group-item active-link" onclick="showSection('home')">
@@ -156,27 +156,74 @@
             </div>
 
             <div class="container-fluid content-section d-none" id="section-weather">
-                <h2 class="text-white mb-4">Atmospheric Conditions</h2>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="text-white m-0">Atmospheric Conditions</h2>
+                    
+                    <div class="btn-group">
+                        <button class="btn btn-sm btn-outline-info active" id="btn-dfw" onclick="updateSector('dfw')">DFW</button>
+                        <button class="btn btn-sm btn-outline-secondary" id="btn-slc" onclick="updateSector('slc')">SLC</button>
+                    </div>
+                </div>
                 
                 <div class="row mb-4 fade-in" id="forecast-row">
                     <div class="col-12 text-center text-label"><i class="fas fa-circle-notch fa-spin"></i> Loading 5-Day Outlook...</div>
                 </div>
 
-                <div class="row g-4">
+                <div class="row g-4 mb-4">
                     <div class="col-lg-7">
-                        <div class="card bg-glass h-100 mb-5"> 
-                            <div class="card-header border-0 bg-transparent d-flex justify-content-between align-items-center">
-                                <span class="text-info" id="sector-label"><i class="fas fa-satellite me-2"></i> SECTOR: DFW</span>
-                                <div class="btn-group">
-                                    <button class="btn btn-sm btn-outline-info active" id="btn-dfw" onclick="updateSector('dfw')">DFW (HQ)</button>
-                                    <button class="btn btn-sm btn-outline-secondary" id="btn-slc" onclick="updateSector('slc')">SLC (Remote)</button>
+                        <div class="card bg-glass h-100 border-info">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="card-title text-info m-0"><i class="fas fa-brain me-2"></i> Operational Briefing</h5>
+                                    <button class="btn btn-sm btn-link text-info p-0" onclick="fetchDashboardData(currentSector)"><i class="fas fa-sync-alt"></i></button>
+                                </div>
+                                <p class="card-text text-white" id="weather-ai-analysis" style="font-size: 1.2rem; line-height: 1.5; font-family: 'Rajdhani', monospace;">
+                                    <i class="fas fa-circle-notch fa-spin"></i> Establishing Uplink...
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-5">
+                        <div class="card bg-glass h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div class="text-start">
+                                        <div class="display-4 fw-bold text-white me-3" id="val-temp">--°</div>
+                                        <span class="text-info fw-bold small" id="sector-label">SECTOR: DFW</span>
+                                    </div>
+                                    <div class="text-end">
+                                        <div class="small fw-bold text-white" id="val-condition">SCANNING...</div>
+                                        <div class="text-label small">FEELS LIKE <span id="val-feels">--°</span></div>
+                                    </div>
+                                </div>
+                                
+                                <hr class="border-secondary opacity-25">
+
+                                <div class="row g-2 text-center">
+                                    <div class="col-4"><div class="data-tile"><span class="text-label">WIND</span><span class="text-value" id="val-wind">--</span></div></div>
+                                    <div class="col-4"><div class="data-tile"><span class="text-label">GUSTS</span><span class="text-value" id="val-gust">--</span></div></div>
+                                    <div class="col-4"><div class="data-tile"><span class="text-label">DIR</span><span class="text-info fw-bold" id="val-wind-dir">--</span></div></div>
+
+                                    <div class="col-4"><div class="data-tile"><span class="text-label">HUMIDITY</span><span class="text-value"><span id="val-humid">--</span>%</span></div></div>
+                                    <div class="col-4"><div class="data-tile"><span class="text-label">DEW PT</span><span class="text-value"><span id="val-dew">--</span>°</span></div></div>
+                                    <div class="col-4"><div class="data-tile"><span class="text-label">PRESSURE</span><span class="text-warning fw-bold"><span id="val-pressure">--</span></span></div></div>
+
+                                    <div class="col-4"><div class="data-tile"><span class="text-label">VISIBILITY</span><span class="text-value"><span id="val-vis">--</span> mi</span></div></div>
+                                    <div class="col-4"><div class="data-tile"><span class="text-label">CLOUDS</span><span class="text-value"><span id="val-clouds">--</span>%</span></div></div>
+                                    <div class="col-4"><div class="data-tile"><span class="text-label">UV</span><span class="text-value">--</span></div></div>
+
+                                    <div class="col-6"><div class="data-tile"><span class="text-label">SUNRISE</span><span class="text-value" id="val-sunrise">--:--</span></div></div>
+                                    <div class="col-6"><div class="data-tile"><span class="text-label">SUNSET</span><span class="text-value" id="val-sunset">--:--</span></div></div>
                                 </div>
                             </div>
-                            <div class="card-body p-0">
-                                <div class="ratio ratio-16x9 border-bottom border-secondary">
-                                    <iframe id="weather-video" src="" title="Live Feed" allowfullscreen></iframe>
-                                </div>
-                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-lg-6">
+                        <div class="card bg-glass h-100">
                             <div class="card-header border-0 bg-transparent py-2">
                                 <small class="text-warning text-label"><i class="fas fa-radar me-2"></i> Live Doppler Radar</small>
                             </div>
@@ -186,56 +233,19 @@
                         </div>
                     </div>
 
-                    <div class="col-lg-5">
-                        <div class="row g-4 h-100">
-                            
-                            <div class="col-12">
-                                <div class="card bg-glass text-center p-4 h-100">
-                                    <h6 class="text-label" style="font-size: 0.8rem;">Real-Time Telemetry</h6>
-                                    
-                                    <div class="d-flex justify-content-center align-items-center my-3">
-                                        <div class="display-3 fw-bold text-white me-3" id="val-temp">--°</div>
-                                        <div class="text-start">
-                                            <div class="small fw-bold" id="val-condition">SCANNING...</div>
-                                            <div class="text-label small">FEELS LIKE <span id="val-feels">--°</span></div>
-                                        </div>
-                                    </div>
-                                    <hr class="border-secondary opacity-25">
-
-                                    <div class="row text-start mt-3">
-                                        <div class="col-4 mb-3"><small class="text-label">WIND</small><span class="text-white fw-bold" id="val-wind">--</span></div>
-                                        <div class="col-4 mb-3"><small class="text-label">GUSTS</small><span class="text-white fw-bold" id="val-gust">--</span></div>
-                                        <div class="col-4 mb-3"><small class="text-label">DIR</small><span class="text-info fw-bold" id="val-wind-dir">--</span></div>
-
-                                        <div class="col-4 mb-3"><small class="text-label">HUMIDITY</small><span class="text-white fw-bold"><span id="val-humid">--</span>%</span></div>
-                                        <div class="col-4 mb-3"><small class="text-label">DEW PT</small><span class="text-white fw-bold"><span id="val-dew">--</span>°</span></div>
-                                        <div class="col-4 mb-3"><small class="text-label">PRESSURE</small><span class="text-warning fw-bold"><span id="val-pressure">--</span> hPa</span></div>
-
-                                        <div class="col-4 mb-3"><small class="text-label">VISIBILITY</small><span class="text-white fw-bold"><span id="val-vis">--</span> mi</span></div>
-                                        <div class="col-4 mb-3"><small class="text-label">CLOUDS</small><span class="text-white fw-bold"><span id="val-clouds">--</span>%</span></div>
-                                        <div class="col-4 mb-3"><small class="text-label">UV</small><span class="text-white fw-bold">--</span></div>
-
-                                        <div class="col-6"><small class="text-label">SUNRISE</small><span class="text-white" id="val-sunrise">--:--</span></div>
-                                        <div class="col-6 text-end"><small class="text-label">SUNSET</small><span class="text-white" id="val-sunset">--:--</span></div>
-                                    </div>
+                    <div class="col-lg-6">
+                        <div class="card bg-glass h-100">
+                            <div class="card-header border-0 bg-transparent py-2">
+                                <small class="text-info text-label"><i class="fas fa-video me-2"></i> Live Sector Feed</small>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="ratio ratio-16x9">
+                                    <iframe id="weather-video" src="" title="Live Feed" allowfullscreen></iframe>
                                 </div>
                             </div>
-
-                            <div class="col-12">
-                                <div class="card bg-glass h-100 border-info" style="min-height: 200px;">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-center mb-3">
-                                            <h5 class="card-title text-info m-0"><i class="fas fa-brain me-2"></i> Operational Briefing</h5>
-                                            <button class="btn btn-sm btn-link text-info p-0" onclick="fetchDashboardData(currentSector)"><i class="fas fa-sync-alt"></i></button>
-                                        </div>
-                                        <p class="card-text text-light small" id="weather-ai-analysis" style="line-height: 1.6;"><i class="fas fa-circle-notch fa-spin"></i> Establishing Uplink...</p>
-                                    </div>
-                                </div>
-                            </div>
-
                         </div>
                     </div>
-                </div> 
+                </div>
             </div>
 
             <div class="container-fluid content-section d-none" id="section-projects">
