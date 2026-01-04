@@ -71,15 +71,16 @@
             <div class="container-fluid content-section" id="section-weather">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h2 class="text-white m-0">Atmospheric Conditions</h2>
-                    
                     <div class="btn-group">
                         <button class="btn btn-sm btn-outline-info active" id="btn-dfw" onclick="updateSector('dfw')">DFW</button>
                         <button class="btn btn-sm btn-outline-secondary" id="btn-slc" onclick="updateSector('slc')">SLC</button>
                     </div>
                 </div>
                 
-                <div class="row mb-4 fade-in" id="forecast-row">
-                    <div class="col-12 text-center text-label"><i class="fas fa-circle-notch fa-spin"></i> Loading 5-Day Outlook...</div>
+                <div class="row mb-4 fade-in" id="forecast-row" style="min-height: 120px;">
+                    <div class="col-12 text-center text-label mt-4">
+                        <i class="fas fa-circle-notch fa-spin"></i> Initializing Forecast Model...
+                    </div>
                 </div>
 
                 <div class="row g-4 mb-4">
@@ -88,7 +89,7 @@
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <h5 class="card-title text-info m-0"><i class="fas fa-brain me-2"></i> Operational Briefing</h5>
-                                    <button class="btn btn-sm btn-link text-info p-0" onclick="fetchDashboardData(currentSector)"><i class="fas fa-sync-alt"></i></button>
+                                    <button class="btn btn-sm btn-link text-info p-0" onclick="initWeather()"><i class="fas fa-sync-alt"></i></button>
                                 </div>
                                 <p class="card-text text-white" id="weather-ai-analysis" style="font-size: 1.2rem; line-height: 1.5; font-family: 'Rajdhani', monospace;">
                                     <i class="fas fa-circle-notch fa-spin"></i> Establishing Uplink...
@@ -114,20 +115,20 @@
                                 <hr class="border-secondary opacity-25">
 
                                 <div class="row g-2 text-center">
-                                    <div class="col-4"><div class="data-tile"><span class="text-label">WIND</span><span class="text-value" id="val-wind">--</span></div></div>
-                                    <div class="col-4"><div class="data-tile"><span class="text-label">GUSTS</span><span class="text-value" id="val-gust">--</span></div></div>
-                                    <div class="col-4"><div class="data-tile"><span class="text-label">DIR</span><span class="text-info fw-bold" id="val-wind-dir">--</span></div></div>
+                                    <div class="col-4"><div class="data-tile" title="Sustained wind speed in MPH"><span class="text-label">WIND</span><span class="text-value" id="val-wind">--</span></div></div>
+                                    <div class="col-4"><div class="data-tile" title="Brief increases in wind speed"><span class="text-label">GUSTS</span><span class="text-value" id="val-gust">--</span></div></div>
+                                    <div class="col-4"><div class="data-tile" title="Compass direction the wind is coming FROM"><span class="text-label">DIR</span><span class="text-info fw-bold" id="val-wind-dir">--</span></div></div>
 
-                                    <div class="col-4"><div class="data-tile"><span class="text-label">HUMIDITY</span><span class="text-value"><span id="val-humid">--</span>%</span></div></div>
-                                    <div class="col-4"><div class="data-tile"><span class="text-label">DEW PT</span><span class="text-value"><span id="val-dew">--</span>°</span></div></div>
-                                    <div class="col-4"><div class="data-tile"><span class="text-label">PRESSURE</span><span class="text-warning fw-bold"><span id="val-pressure">--</span></span></div></div>
+                                    <div class="col-4"><div class="data-tile" title="Amount of water vapor in the air (%)"><span class="text-label">HUMIDITY</span><span class="text-value"><span id="val-humid">--</span>%</span></div></div>
+                                    <div class="col-4"><div class="data-tile" title="Temp at which dew forms. Closer to air temp = Sticky."><span class="text-label">DEW PT</span><span class="text-value"><span id="val-dew">--</span>°</span></div></div>
+                                    <div class="col-4"><div class="data-tile" title="Atmospheric pressure. Lower = Stormy."><span class="text-label">PRESSURE</span><span class="text-warning fw-bold"><span id="val-pressure">--</span></span></div></div>
 
-                                    <div class="col-4"><div class="data-tile"><span class="text-label">VISIBILITY</span><span class="text-value"><span id="val-vis">--</span> mi</span></div></div>
-                                    <div class="col-4"><div class="data-tile"><span class="text-label">CLOUDS</span><span class="text-value"><span id="val-clouds">--</span>%</span></div></div>
-                                    <div class="col-4"><div class="data-tile"><span class="text-label">UV</span><span class="text-value">--</span></div></div>
+                                    <div class="col-4"><div class="data-tile" title="Distance one can clearly see (Miles)"><span class="text-label">VISIBILITY</span><span class="text-value"><span id="val-vis">--</span> mi</span></div></div>
+                                    <div class="col-4"><div class="data-tile" title="Percentage of sky covered by clouds"><span class="text-label">CLOUDS</span><span class="text-value"><span id="val-clouds">--</span>%</span></div></div>
+                                    <div class="col-4"><div class="data-tile" title="UV Index (Solar Radiation Strength)"><span class="text-label">UV</span><span class="text-value">--</span></div></div>
 
-                                    <div class="col-6"><div class="data-tile"><span class="text-label">SUNRISE</span><span class="text-value" id="val-sunrise">--:--</span></div></div>
-                                    <div class="col-6"><div class="data-tile"><span class="text-label">SUNSET</span><span class="text-value" id="val-sunset">--:--</span></div></div>
+                                    <div class="col-6"><div class="data-tile" title="Time of first light"><span class="text-label">SUNRISE</span><span class="text-value" id="val-sunrise">--:--</span></div></div>
+                                    <div class="col-6"><div class="data-tile" title="Time of last light"><span class="text-label">SUNSET</span><span class="text-value" id="val-sunset">--:--</span></div></div>
                                 </div>
                             </div>
                         </div>

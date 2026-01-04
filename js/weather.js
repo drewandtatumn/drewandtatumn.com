@@ -1,7 +1,6 @@
 // js/weather.js
-// SKYNET: Atmospheric Monitoring & Dashboard Logic
+// SKYNET V2.5 - EXPONENTIAL BACKOFF PROTOCOL
 
-// CONFIGURATION
 const SECTORS = {
     dfw: {
         name: "McKinney, TX",
@@ -15,15 +14,14 @@ const SECTORS = {
     }
 };
 
-// "NEVER FAIL" PROTOCOL: Hardcoded Simulation Data
 const SAFE_MODE_DATA = {
     weather: {
         temp: 72, feels_like: 70, condition: "SIMULATION", 
         wind: 5, wind_gust: 8, wind_deg: 180, 
         pressure: 1015, humidity: 45, dew_point: 50, 
         clouds: 10, visibility: 16093, 
-        sunrise: Math.floor(Date.now()/1000) - 10000, 
-        sunset: Math.floor(Date.now()/1000) + 10000
+        sunrise: Math.floor(Date.now()/1000) - 20000, 
+        sunset: Math.floor(Date.now()/1000) + 20000
     },
     forecast: [
         { date: Math.floor(Date.now()/1000) + 86400, high: 75, low: 60, pop: 10, wind: 8, condition: "Clear", icon: "01d" },
@@ -36,31 +34,33 @@ const SAFE_MODE_DATA = {
 };
 
 let currentSector = 'dfw';
+let retryCount = 0;
+// Backoff strategy: Wait 5s, then 15s, then 30s before giving up
+const retryDelays = [5000, 15000, 30000]; 
 
 // --- INITIALIZATION ---
 initWeather();
 
 function initWeather() {
+    retryCount = 0; // Reset retries on manual refresh
     updateSector(currentSector);
 }
 
 function updateSector(sectorKey) {
     currentSector = sectorKey;
     const sector = SECTORS[sectorKey];
-
-    // Update Buttons
+    
+    // UI Updates
     const btnDfw = document.getElementById('btn-dfw');
     const btnSlc = document.getElementById('btn-slc');
-    
     if(btnDfw && btnSlc) {
         btnDfw.className = `btn btn-sm ${sectorKey === 'dfw' ? 'btn-info' : 'btn-outline-secondary'}`;
         btnSlc.className = `btn btn-sm ${sectorKey === 'slc' ? 'btn-info' : 'btn-outline-secondary'}`;
     }
 
-    // Update Label
     const label = document.getElementById('sector-label');
     if(label) label.innerHTML = `<i class="fas fa-satellite me-2"></i> SECTOR: ${sectorKey.toUpperCase()}`;
-
+    
     // Update Feeds
     const videoFrame = document.getElementById('weather-video');
     if (videoFrame && videoFrame.src !== sector.videoUrl) videoFrame.src = sector.videoUrl;
@@ -76,10 +76,12 @@ async function fetchDashboardData(sectorKey) {
     const condEl = document.getElementById('val-condition');
     const aiEl = document.getElementById('weather-ai-analysis');
     
-    // Reset UI to Loading State
-    if(condEl) condEl.innerText = "PINGING...";
-    if(aiEl) aiEl.innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> Establishing Uplink...`;
-    
+    // Only show "PINGING" on the first try, not on automatic retries
+    if(retryCount === 0) {
+        if(condEl) condEl.innerText = "PINGING...";
+        if(aiEl) aiEl.innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> Establishing Uplink...`;
+    }
+
     try {
         // ATTEMPT LIVE CONNECTION
         const response = await fetch(WORKER_URL, {
@@ -94,48 +96,64 @@ async function fetchDashboardData(sectorKey) {
         if (!data || !data.weather) throw new Error("Invalid telemetry received");
         
         // SUCCESS: Render Real Data
+        retryCount = 0; // Reset counter on success
         renderDashboard(data, false);
 
     } catch (e) {
-        // FAILOVER: Render Safe Mode Data
-        console.warn("Uplink Failed. Engaging Safe Mode.", e);
-        renderDashboard(SAFE_MODE_DATA, true);
+        console.warn(`Attempt Failed. Retry Level: ${retryCount}`, e);
+        
+        if (retryCount < retryDelays.length) {
+            // RETRY LOGIC (Exponential Backoff)
+            const delay = retryDelays[retryCount];
+            if(aiEl) aiEl.innerHTML = `<span class="text-warning"><i class="fas fa-satellite-dish"></i> Uplink Weak. Retrying in ${delay/1000}s...</span>`;
+            
+            setTimeout(() => {
+                retryCount++;
+                fetchDashboardData(sectorKey);
+            }, delay);
+        } else {
+            // GIVE UP -> RENDER SAFE MODE
+            renderDashboard(SAFE_MODE_DATA, true);
+        }
     }
 }
 
 function renderDashboard(data, isSimulation) {
     const w = data.weather;
-
-    // 1. Theme Engine
-    updateThemeColor(w.sunrise, w.sunset);
-
-    // 2. Telemetry
-    document.getElementById('val-temp').innerText = w.temp + "°";
-    document.getElementById('val-feels').innerText = w.feels_like + "°";
-    document.getElementById('val-condition').innerText = w.condition.toUpperCase();
-    document.getElementById('val-wind').innerText = w.wind + " mph";
-    document.getElementById('val-gust').innerText = w.wind_gust + " mph";
-    document.getElementById('val-wind-dir').innerText = getCardinalDirection(w.wind_deg);
-    document.getElementById('val-pressure').innerText = w.pressure;
-    document.getElementById('val-humid').innerText = w.humidity;
-    document.getElementById('val-dew').innerText = w.dew_point;
-    document.getElementById('val-clouds').innerText = w.clouds;
-    document.getElementById('val-vis').innerText = (w.visibility / 1609.34).toFixed(1);
-
-    document.getElementById('val-sunrise').innerText = new Date(w.sunrise * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-    document.getElementById('val-sunset').innerText = new Date(w.sunset * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-
-    // 3. Colors
-    applyColorLogic(w);
-
-    // 4. Forecast
-    if (data.forecast) renderForecast(data.forecast);
-
-    // 5. Briefing & Simulation Warning
     const aiEl = document.getElementById('weather-ai-analysis');
+
+    // 1. Theme Engine (Safe Wrapped)
+    try { updateThemeColor(w.sunrise, w.sunset); } catch(e) { console.error("Theme Error", e); }
+
+    // 2. Telemetry (Wrap in try/catch so partial failures don't stop the rest)
+    try {
+        document.getElementById('val-temp').innerText = w.temp + "°";
+        document.getElementById('val-feels').innerText = w.feels_like + "°";
+        document.getElementById('val-condition').innerText = w.condition.toUpperCase();
+        document.getElementById('val-wind').innerText = w.wind + " mph";
+        document.getElementById('val-gust').innerText = w.wind_gust + " mph";
+        document.getElementById('val-wind-dir').innerText = getCardinalDirection(w.wind_deg);
+        document.getElementById('val-pressure').innerText = w.pressure;
+        document.getElementById('val-humid').innerText = w.humidity;
+        document.getElementById('val-dew').innerText = w.dew_point;
+        document.getElementById('val-clouds').innerText = w.clouds;
+        document.getElementById('val-vis').innerText = (w.visibility / 1609.34).toFixed(1);
+
+        document.getElementById('val-sunrise').innerText = new Date(w.sunrise * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        document.getElementById('val-sunset').innerText = new Date(w.sunset * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        
+        applyColorLogic(w);
+    } catch (e) { console.error("Telemetry Error", e); }
+
+    // 3. Forecast
+    try {
+        if(data.forecast) renderForecast(data.forecast);
+    } catch (e) { console.error("Forecast Error", e); }
+
+    // 4. Briefing & Simulation Warning
     if (aiEl) {
         if (isSimulation) {
-            aiEl.innerHTML = `<span class="text-warning"><i class="fas fa-exclamation-triangle"></i> SIMULATION MODE ACTIVE.</span><br><small class="text-secondary">Uplink Failed. Displaying cached data.</small>`;
+            aiEl.innerHTML = `<span class="text-danger">⚠ UPLINK FAILED.</span><br>Problem with weather API - try going outside if you want to see the weather :)`;
             document.getElementById('val-condition').innerText = "OFFLINE";
             document.getElementById('val-condition').className = "small fw-bold text-danger";
         } else {
@@ -144,7 +162,8 @@ function renderDashboard(data, isSimulation) {
     }
 }
 
-// --- HELPERS (Forecast, Moon, Theme) ---
+// --- HELPERS ---
+
 function getMoonPhase(date) {
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
