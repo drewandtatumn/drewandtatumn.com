@@ -2,13 +2,15 @@
 body {
     background-color: #050505;
     color: #e2e8f0;
-    font-family: 'Rajdhani', sans-serif; /* Tech Font */
+    font-family: 'Rajdhani', sans-serif;
     font-weight: 500;
-    overflow-x: hidden;
+    /* Lock the Viewport - No Body Scroll */
+    height: 100vh;
+    overflow: hidden; 
 }
 
 h1, h2, h3, h4, h5, .sidebar-heading, .navbar-brand {
-    font-family: 'Orbitron', sans-serif; /* Header Font */
+    font-family: 'Orbitron', sans-serif;
     letter-spacing: 1px;
 }
 
@@ -21,10 +23,11 @@ h1, h2, h3, h4, h5, .sidebar-heading, .navbar-brand {
     background: radial-gradient(circle at bottom, #1a1a2e 0%, #000000 100%);
 }
 
-/* --- Layout & Sidebar --- */
+/* --- Layout Structure (The "App" Feel) --- */
 #wrapper {
     display: flex;
-    min-height: 100vh;
+    height: 100vh; /* Full Height */
+    width: 100%;
 }
 
 #sidebar-wrapper {
@@ -34,52 +37,111 @@ h1, h2, h3, h4, h5, .sidebar-heading, .navbar-brand {
     border-right: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
     flex-direction: column;
-    
-    /* Fixed position ensures 100% height on both mobile and desktop */
-    position: fixed; 
-    top: 0;
-    bottom: 0;
-    left: 0;
     z-index: 1000;
     transition: transform 0.3s ease-in-out;
-    
-    /* Mobile: Hidden (moved left) by default */
-    transform: translateX(-260px);
 }
 
 #page-content-wrapper {
-    width: 100%;
-    margin-left: 0; /* Mobile default */
-    transition: margin-left 0.3s ease-in-out;
+    flex: 1; /* Fill remaining width */
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    height: 100vh; /* Lock height */
+    overflow-y: auto; /* THIS is the only scrollable area */
+    scroll-behavior: smooth;
 }
 
-/* --- Desktop Logic (Screens > 768px) --- */
-@media (min-width: 768px) {
-    #sidebar-wrapper {
-        transform: translateX(0); /* Always visible */
-    }
-    #page-content-wrapper {
-        margin-left: 260px; /* Push content to right */
-    }
-    
-    /* If we want a toggle on desktop later */
-    #wrapper.toggled #sidebar-wrapper {
-        transform: translateX(-260px);
-    }
-    #wrapper.toggled #page-content-wrapper {
-        margin-left: 0;
-    }
+/* Custom Scrollbar */
+#page-content-wrapper::-webkit-scrollbar { width: 8px; }
+#page-content-wrapper::-webkit-scrollbar-track { background: #000; }
+#page-content-wrapper::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+#page-content-wrapper::-webkit-scrollbar-thumb:hover { background: #0dcaf0; }
+
+/* --- High Contrast Utilities --- */
+.text-label {
+    color: #c0c0c0 !important; /* Luminous Silver */
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 600;
 }
 
-/* --- Mobile Logic (Sidebar Open) --- */
-#wrapper.toggled #sidebar-wrapper {
-    transform: translateX(0);
+.text-value {
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.1rem;
 }
 
-/* Sidebar Styles */
+/* --- Glass Cards & Data Tiles --- */
+.bg-glass {
+    background: rgba(20, 20, 20, 0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px; /* Sharper corners for "Command" feel */
+}
+
+/* New: Telemetry Data Tiles */
+.data-tile {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 10px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.data-tile:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(13, 202, 240, 0.5); /* Glow Cyan */
+    box-shadow: 0 0 10px rgba(13, 202, 240, 0.2);
+    transform: translateY(-2px);
+}
+
+/* --- Chat Interface Fixed --- */
+.chat-card {
+    /* Calculate height to fill space between nav and footer */
+    height: calc(100vh - 200px); 
+    display: flex;
+    flex-direction: column;
+}
+
+#chat-history {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+    /* Internal Scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: #0dcaf0 #1a1a2e;
+}
+
+.ai-message {
+    background: rgba(13, 202, 240, 0.15);
+    border-left: 3px solid #0dcaf0;
+    padding: 12px;
+    border-radius: 4px;
+    color: #e0e0e0;
+    margin-bottom: 15px;
+    word-wrap: break-word;
+}
+
+.user-message {
+    background: rgba(255, 255, 255, 0.1);
+    border-right: 3px solid #888;
+    padding: 12px;
+    border-radius: 4px;
+    text-align: right;
+    color: #fff;
+    margin-bottom: 15px;
+    align-self: flex-end;
+    max-width: 85%;
+    word-wrap: break-word;
+}
+
+/* --- Sidebar & Mobile --- */
 .sidebar-heading {
     padding: 2rem;
     text-align: center;
@@ -103,138 +165,28 @@ h1, h2, h3, h4, h5, .sidebar-heading, .navbar-brand {
     border-right: 3px solid #0dcaf0;
 }
 
-/* --- Glass Cards --- */
-.bg-glass {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    color: white;
-}
-
-/* --- NEW: High Contrast Label --- */
-.text-label {
-    color: #c0c0c0 !important; /* Luminous Silver */
-    font-size: 0.65rem;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    display: block;
-    margin-bottom: 2px;
-}
-
-/* --- Chat Interface --- */
-.chat-card {
-    height: auto;         /* Let content dictate height */
-    min-height: 400px;    /* Start with a decent size */
-    max-height: 80vh;     /* Stop growing before hitting the screen edge */
-    display: flex;
-    flex-direction: column;
-    transition: height 0.3s ease; /* Smooth growth */
-}
-
-/* The container for the messages */
-#chat-history {
-    flex: 1 1 auto;       /* Grow to fill space, but allow shrinking if needed */
-    overflow-y: auto;     /* Scroll ONLY if we hit the max-height limit */
-    min-height: 250px;    /* Ensure there is always a drop zone for messages */
-    
-    /* Scrollbar Styling for Chrome/Safari */
-    scrollbar-width: thin;
-    scrollbar-color: #0dcaf0 #1a1a2e;
-}
-
-/* Message Bubbles */
-.ai-message {
-    background: rgba(13, 202, 240, 0.15);
-    border-left: 3px solid #0dcaf0;
-    padding: 12px;
-    border-radius: 4px;
-    color: #e0e0e0;
-    margin-bottom: 15px;
-    word-wrap: break-word; /* Prevent long words from breaking layout */
-}
-
-.user-message {
-    background: rgba(255, 255, 255, 0.1);
-    border-right: 3px solid #888;
-    padding: 12px;
-    border-radius: 4px;
-    text-align: right;
-    color: #fff;
-    margin-bottom: 15px;
-    align-self: flex-end; /* Push to right */
-    max-width: 85%;       /* Don't span full width */
-    word-wrap: break-word;
-}
-
-/* Input Area */
-.input-group { 
-    width: 100%; 
-    flex-wrap: nowrap; 
-    margin-top: auto; /* Push to bottom if content is short */
-}
-
-#user-input { 
-    min-width: 0; 
-}
-
-/* --- Mobile Tweaks (The Robust Fix) --- */
 @media (max-width: 768px) {
+    #sidebar-wrapper {
+        position: fixed; /* Overlay on mobile */
+        left: -260px;
+    }
+    #wrapper.toggled #sidebar-wrapper {
+        left: 0;
+    }
     .chat-card {
-        /* On mobile, force a fixed height like a real app */
-        height: 70vh !important; 
-        min-height: 70vh !important;
-        max-height: 70vh !important;
-    }
-
-    #chat-history {
-        /* Ensure the text scrolls INSIDE this fixed box */
-        flex: 1;
-        overflow-y: scroll; 
-        -webkit-overflow-scrolling: touch; /* Smooth scrolling on iPhone */
-    }
-
-    body {
-        min-height: 100vh;
-        /* Adds a little breathing room at the bottom for scrolling */
-        padding-bottom: 50px; 
-    }
-    
-    /* Adjust margin so it doesn't hit the very bottom of phone screen */
-    #section-ai {
-        padding-bottom: 80px; 
+        height: 75vh; /* Mobile chat height */
     }
 }
 
-/* --- Stat Cards --- */
-.stat-card {
-    background: rgba(0,0,0,0.5);
-    padding: 20px;
-    border-radius: 8px;
-    border-top: 2px solid #0dcaf0;
-    text-align: center;
-}
-.stat-card h3 { font-size: 2.5rem; color: #fff; font-family: 'Orbitron', sans-serif; }
-
-/* --- Glow Button --- */
-.btn-login-glow {
-    background: transparent;
-    color: #0dcaf0;
-    border: 1px solid #0dcaf0;
-    box-shadow: 0 0 10px rgba(13, 202, 240, 0.2);
-    border-radius: 20px;
-    padding: 8px 20px;
-    transition: 0.3s;
-    font-family: 'Rajdhani', sans-serif;
-    font-weight: 700;
-}
-.btn-login-glow:hover {
-    background: #0dcaf0; color: #000;
-    box-shadow: 0 0 20px rgba(13, 202, 240, 0.6);
-}
-
-/* --- Utilities --- */
-.content-section { padding: 40px 20px; flex: 1; }
+/* Utilities */
+.content-section { padding: 30px; flex: 1; }
 .d-none { display: none !important; }
-.fade-in { animation: fadeIn 0.8s ease-in; }
+.fade-in { animation: fadeIn 0.6s ease-out; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+.btn-login-glow {
+    background: transparent; color: #0dcaf0; border: 1px solid #0dcaf0;
+    box-shadow: 0 0 10px rgba(13, 202, 240, 0.2); border-radius: 20px;
+    padding: 6px 18px; transition: 0.3s; font-family: 'Rajdhani', sans-serif; font-weight: 700;
+}
+.btn-login-glow:hover { background: #0dcaf0; color: #000; box-shadow: 0 0 20px rgba(13, 202, 240, 0.6); }
