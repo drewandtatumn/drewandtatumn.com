@@ -1,85 +1,60 @@
 // js/script.js
 
-// --- CONFIGURATION ---
+// CONFIGURATION
 const WORKER_URL = "https://mathis-oracle.drewandtatumn.workers.dev"; 
 
-// 24/7 Live News Streams (YouTube IDs) & Radar Feeds (Windy)
 const SECTORS = {
     dfw: {
         name: "McKinney, TX",
-        // DFW Radar (Windy) - Centered on McKinney
         radarUrl: "https://embed.windy.com/embed2.html?lat=32.8998&lon=-97.0403&detailLat=32.8998&detailLon=-97.0403&width=650&height=450&zoom=9&level=surface&overlay=rain&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=mph&metricTemp=°F&radarRange=-1",
-        // YouTube Embed (Standard) - FOX 4 Dallas
         videoUrl: "https://www.youtube.com/embed/HkfKsRa9qnE?autoplay=1&mute=1&controls=0&rel=0"
     },
     slc: {
         name: "Salt Lake City, UT",
-        // SLC Radar (Windy) - Centered on SLC
         radarUrl: "https://embed.windy.com/embed2.html?lat=40.7608&lon=-111.8910&detailLat=40.7608&detailLon=-111.8910&width=650&height=450&zoom=9&level=surface&overlay=rain&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=mph&metricTemp=°F&radarRange=-1",
-        // Nest Cam Embed - Direct Stream
         videoUrl: "https://video.nest.com/embedded/live/qAupZ0qsW2?autoplay=1"
     }
 };
 
 let currentSector = 'dfw';
 
-// --- SYSTEM INITIALIZATION ---
+// GLOBAL THEME COLOR (RGB Format for Canvas)
+// Default: Cyan Blue (Day Mode)
+window.canvasThemeColor = "13, 202, 240"; 
+
+// --- INITIALIZATION ---
 window.onload = function() {
     console.log("Mathis Global Industries: Online.");
-    
-    // 1. Initialize Animation
     initNetworkAnimation(); 
 
-    // 2. Initialize Menu Toggle
+    // Menu Logic
     const menuToggle = document.getElementById("menu-toggle");
     const menuClose = document.getElementById("menu-close");
     const wrapper = document.getElementById("wrapper");
-    
     if (menuToggle && wrapper) {
-        menuToggle.addEventListener("click", function(e) {
-            e.preventDefault();
-            wrapper.classList.toggle("toggled");
-        });
+        menuToggle.addEventListener("click", e => { e.preventDefault(); wrapper.classList.toggle("toggled"); });
     }
-
     if (menuClose && wrapper) {
-        menuClose.addEventListener("click", function(e) {
-            e.preventDefault();
-            wrapper.classList.remove("toggled");
-        });
+        menuClose.addEventListener("click", e => { e.preventDefault(); wrapper.classList.remove("toggled"); });
     }
 };
 
-// --- NAVIGATION LOGIC ---
+// --- NAVIGATION ---
 function showSection(sectionId) {
-    // 1. Hide all sections
     document.querySelectorAll('.content-section').forEach(sec => sec.classList.add('d-none'));
-    
-    // 2. Show the target section
     const target = document.getElementById('section-' + sectionId);
-    if (target) {
-        target.classList.remove('d-none');
-    }
+    if (target) target.classList.remove('d-none');
 
-    // 3. Highlight the Sidebar Link
     document.querySelectorAll('.list-group-item').forEach(item => item.classList.remove('active-link'));
     const activeLink = document.querySelector(`a[href="#${sectionId}"]`);
-    if (activeLink) {
-        activeLink.classList.add('active-link');
-    }
+    if (activeLink) activeLink.classList.add('active-link');
 
-    // 4. Auto-Close Sidebar on Mobile
-    if (window.innerWidth < 768) {
-        document.getElementById("wrapper").classList.remove("toggled");
-    }
+    if (window.innerWidth < 768) document.getElementById("wrapper").classList.remove("toggled");
 
-    // 5. Trigger Weather Load ONLY when clicking the tab
-    if (sectionId === 'weather') {
-        initWeather();
-    }
+    if (sectionId === 'weather') initWeather();
 }
 
-/* ================= SKYNET (WEATHER) COMMAND CENTER ================= */
+/* ================= WEATHER LOGIC ================= */
 
 function initWeather() {
     updateSector(currentSector);
@@ -89,68 +64,67 @@ function updateSector(sectorKey) {
     currentSector = sectorKey;
     const sector = SECTORS[sectorKey];
 
-    // 1. Update Buttons
     document.getElementById('btn-dfw').className = `btn btn-sm ${sectorKey === 'dfw' ? 'btn-info' : 'btn-outline-secondary'}`;
     document.getElementById('btn-slc').className = `btn btn-sm ${sectorKey === 'slc' ? 'btn-info' : 'btn-outline-secondary'}`;
     document.getElementById('sector-label').innerHTML = `<i class="fas fa-satellite me-2"></i> SECTOR: ${sectorKey.toUpperCase()}`;
 
-    // 2. Update Video Feed (Dynamic Source: YouTube or Nest)
     const videoFrame = document.getElementById('weather-video');
-    // Check src to prevent unnecessary reloads/flickering
-    if (videoFrame.src !== sector.videoUrl) {
-        videoFrame.src = sector.videoUrl;
-    }
+    if (videoFrame.src !== sector.videoUrl) videoFrame.src = sector.videoUrl;
 
-    // 3. Update Radar Feed
     const radarFrame = document.getElementById('weather-radar');
-    if (radarFrame && radarFrame.src !== sector.radarUrl) {
-        radarFrame.src = sector.radarUrl;
-    }
+    if (radarFrame && radarFrame.src !== sector.radarUrl) radarFrame.src = sector.radarUrl;
 
-    // 4. Fetch Telemetry
     fetchDashboardData(sectorKey);
 }
 
 async function fetchDashboardData(sectorKey) {
-    // UI Loading States
     document.getElementById('val-condition').innerText = "ESTABLISHING LINK...";
     document.getElementById('weather-ai-analysis').innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> Decrypting Atmospheric Data...`;
-    
-    // Reset values to dashes
-    document.getElementById('val-temp').innerText = "--°";
-    document.getElementById('val-wind').innerText = "--";
+    document.getElementById('forecast-row').innerHTML = `<div class="col-12 text-center text-secondary small"><i class="fas fa-circle-notch fa-spin"></i> Loading 5-Day Outlook...</div>`;
 
     try {
         const response = await fetch(WORKER_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-                type: "dashboard_update", 
-                sector: sectorKey 
-            }) 
+            body: JSON.stringify({ type: "dashboard_update", sector: sectorKey }) 
         });
 
         const data = await response.json();
-        
-        // Safety check for valid data
         if (!data || !data.weather) throw new Error("Invalid telemetry received");
-
+        
         const w = data.weather;
 
-        // 4. Update DOM with Real Data
+        // 1. UPDATE VISUAL THEME BASED ON SUNRISE/SUNSET
+        updateThemeColor(w.sunrise, w.sunset);
+
+        // 2. Update Telemetry
         document.getElementById('val-temp').innerText = w.temp + "°";
         document.getElementById('val-feels').innerText = w.feels_like + "°";
         document.getElementById('val-condition').innerText = w.condition;
-        
-        document.getElementById('val-wind').innerText = w.wind;
+        document.getElementById('val-wind').innerText = w.wind + " mph";
+        document.getElementById('val-gust').innerText = w.wind_gust + " mph";
+        document.getElementById('val-wind-dir').innerText = getCardinalDirection(w.wind_deg);
         document.getElementById('val-pressure').innerText = w.pressure;
+        document.getElementById('val-humid').innerText = w.humidity;
+        document.getElementById('val-dew').innerText = w.dew_point;
+        document.getElementById('val-clouds').innerText = w.clouds;
         
-        // Soil Moisture & Rain are not provided by standard OWM, setting to N/A/Default to avoid "Scanning..." loop
-        document.getElementById('val-soil').innerText = "N/A"; 
-        document.getElementById('val-soil-color').className = "fw-bold text-secondary";
-        document.getElementById('val-rain').innerText = "--";
+        // Visibility
+        document.getElementById('val-vis').innerText = (w.visibility / 1609.34).toFixed(1);
 
-        // 5. Update AI Briefing
+        // Sunrise/Sunset
+        document.getElementById('val-sunrise').innerText = new Date(w.sunrise * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        document.getElementById('val-sunset').innerText = new Date(w.sunset * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+        // Color Logic
+        applyColorLogic(w);
+
+        // Render Forecast
+        if (data.forecast && data.forecast.length > 0) {
+            renderForecast(data.forecast);
+        }
+
+        // Briefing
         if (data.briefing) {
             document.getElementById('weather-ai-analysis').innerHTML = data.briefing.replace(/\*\*(.*?)\*\*/g, '<strong class="text-info">$1</strong>');
         }
@@ -162,178 +136,172 @@ async function fetchDashboardData(sectorKey) {
     }
 }
 
-/* ================= THE ORACLE (CHATBOT) ================= */
+// --- DYNAMIC THEME ENGINE ---
+function updateThemeColor(sunrise, sunset) {
+    const now = Math.floor(Date.now() / 1000); // Current Unix Timestamp
+    
+    // Time Buffers (in seconds)
+    const thirtyMins = 1800;
+    const fortyFiveMins = 2700;
 
-// Global History
-let conversationHistory = [];
+    let newColor = "13, 202, 240"; // Default: Cyan (Day)
 
-function handleEnter(e) {
-    if (e.key === 'Enter') sendMessage();
+    if (now < sunrise - thirtyMins) {
+        // Pre-Dawn Night -> Matrix Green
+        newColor = "0, 255, 0"; 
+    } else if (now >= sunrise - thirtyMins && now < sunrise + thirtyMins) {
+        // Golden Hour (Sunrise) -> Orange
+        newColor = "255, 193, 7"; 
+    } else if (now >= sunrise + thirtyMins && now < sunset - thirtyMins) {
+        // Day Operations -> Cyan Blue
+        newColor = "13, 202, 240"; 
+    } else if (now >= sunset - thirtyMins && now < sunset + fortyFiveMins) {
+        // Golden Hour / Twilight -> Manly Purple
+        newColor = "111, 66, 193"; 
+    } else {
+        // Night Operations -> Matrix Green
+        newColor = "0, 255, 0";
+    }
+
+    // Apply Global Variable (Canvas picks this up in the next frame)
+    window.canvasThemeColor = newColor;
 }
 
+function renderForecast(forecastData) {
+    const container = document.getElementById('forecast-row');
+    container.innerHTML = ""; 
+
+    forecastData.forEach(day => {
+        const dateObj = new Date(day.date * 1000);
+        const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'short' });
+        const iconUrl = `https://openweathermap.org/img/wn/${day.icon}.png`;
+
+        const html = `
+            <div class="col">
+                <div class="card bg-glass text-center p-2 h-100 border-0" style="background: rgba(255,255,255,0.02);">
+                    <small class="text-info d-block mb-1">${dayName}</small>
+                    <img src="${iconUrl}" alt="${day.condition}" style="width: 40px; height: 40px;">
+                    <div class="fw-bold text-white">${day.temp}°</div>
+                    <small class="text-secondary" style="font-size: 0.6rem;">${day.condition}</small>
+                </div>
+            </div>
+        `;
+        container.innerHTML += html;
+    });
+}
+
+function applyColorLogic(w) {
+    const tempEl = document.getElementById('val-temp');
+    tempEl.className = `display-3 fw-bold me-3 ${w.temp > 95 ? 'text-danger' : (w.temp < 32 ? 'text-info' : 'text-white')}`;
+
+    const windEl = document.getElementById('val-wind');
+    windEl.className = `fw-bold ${w.wind > 20 ? 'text-danger' : (w.wind > 12 ? 'text-warning' : 'text-white')}`;
+
+    const condEl = document.getElementById('val-condition');
+    if (w.condition.includes("RAIN") || w.condition.includes("STORM")) {
+        condEl.className = "small fw-bold text-info"; 
+    } else if (w.condition.includes("CLEAR")) {
+        condEl.className = "small fw-bold text-success"; 
+    } else {
+        condEl.className = "small fw-bold text-light"; 
+    }
+}
+
+function getCardinalDirection(angle) {
+    if (typeof angle !== 'number') return "";
+    const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+    return directions[Math.round(angle / 45) % 8];
+}
+
+/* ================= CHATBOT LOGIC ================= */
+let conversationHistory = [];
+function handleEnter(e) { if (e.key === 'Enter') sendMessage(); }
 async function sendMessage() {
     const inputField = document.getElementById('user-input');
     const chatHistoryDiv = document.getElementById('chat-history');
-    
     if (!inputField || !chatHistoryDiv) return;
-    
     const userText = inputField.value.trim();
     if (!userText) return;
 
-    // 1. Display User Message
-    chatHistoryDiv.innerHTML += `
-        <div class="user-message">
-            <span class="badge bg-secondary mb-1">You</span><br>
-            ${userText}
-        </div>
-    `;
+    chatHistoryDiv.innerHTML += `<div class="user-message"><span class="badge bg-secondary mb-1">You</span><br>${userText}</div>`;
     inputField.value = "";
     chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+    conversationHistory.push({ role: "user", parts: [{ text: userText }] });
 
-    // 2. Add to History
-    conversationHistory.push({
-        role: "user",
-        parts: [{ text: userText }]
-    });
-
-    // 3. Show Loading
     const loadingId = "loading-" + Date.now();
-    chatHistoryDiv.innerHTML += `
-        <div class="ai-message" id="${loadingId}">
-            <span class="badge bg-info text-dark mb-1">Oracle</span><br>
-            <i class="fas fa-circle-notch fa-spin"></i> Computing...
-        </div>
-    `;
+    chatHistoryDiv.innerHTML += `<div class="ai-message" id="${loadingId}"><span class="badge bg-info text-dark mb-1">Oracle</span><br><i class="fas fa-circle-notch fa-spin"></i> Computing...</div>`;
     chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
 
     try {
-        // 4. Send History to Worker
         const response = await fetch(WORKER_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ history: conversationHistory }) 
         });
-
-        if (!response.ok) {
-            throw new Error(`Worker Error: ${response.status}`);
-        }
-
+        if (!response.ok) throw new Error(`Worker Error: ${response.status}`);
         const data = await response.json();
-        
-        // Remove loading
         const loadingEl = document.getElementById(loadingId);
         if (loadingEl) loadingEl.remove();
 
         if (data.candidates && data.candidates[0].content) {
             const aiText = data.candidates[0].content.parts[0].text;
-            
-            // 5. Display AI Message
             const formattedText = aiText.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
-            chatHistoryDiv.innerHTML += `
-                <div class="ai-message">
-                    <span class="badge bg-info text-dark mb-1">Oracle</span><br>
-                    ${formattedText}
-                </div>
-            `;
-
-            // 6. Save AI Response
-            conversationHistory.push({
-                role: "model",
-                parts: [{ text: aiText }]
-            });
-
-        } else {
-            throw new Error("No valid text in response");
+            chatHistoryDiv.innerHTML += `<div class="ai-message"><span class="badge bg-info text-dark mb-1">Oracle</span><br>${formattedText}</div>`;
+            conversationHistory.push({ role: "model", parts: [{ text: aiText }] });
         }
-
     } catch (error) {
         const loadingEl = document.getElementById(loadingId);
-        if (loadingEl) {
-             loadingEl.innerHTML = `
-                <span class="badge bg-danger text-white mb-1">Error</span><br>
-                Connection Failed. The Oracle is offline.
-            `;
-        }
-        console.error(error);
+        if (loadingEl) loadingEl.innerHTML = `<span class="badge bg-danger text-white mb-1">Error</span><br>Connection Failed.`;
     }
-    
     chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
 }
 
-// --- NETWORK BACKGROUND ANIMATION ---
+// --- NETWORK BACKGROUND ANIMATION (UPDATED FOR DYNAMIC COLOR) ---
 function initNetworkAnimation() {
     const canvas = document.getElementById('canvas-network');
     if (!canvas) return;
-
     const ctx = canvas.getContext('2d');
-    let width, height;
-    let particles = [];
+    let width, height, particles = [];
+    const particleCount = 60, connectionDistance = 150, moveSpeed = 0.5;
+
+    function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; }
     
-    const particleCount = 60; 
-    const connectionDistance = 150; 
-    const moveSpeed = 0.5;
-
-    function resize() {
-        width = canvas.width = window.innerWidth;
-        height = canvas.height = window.innerHeight;
-    }
-
     class Particle {
         constructor() {
-            this.x = Math.random() * width;
-            this.y = Math.random() * height;
-            this.vx = (Math.random() - 0.5) * moveSpeed;
-            this.vy = (Math.random() - 0.5) * moveSpeed;
+            this.x = Math.random() * width; this.y = Math.random() * height;
+            this.vx = (Math.random() - 0.5) * moveSpeed; this.vy = (Math.random() - 0.5) * moveSpeed;
             this.size = Math.random() * 2 + 1;
         }
-
         update() {
-            this.x += this.vx;
-            this.y += this.vy;
+            this.x += this.vx; this.y += this.vy;
             if (this.x < 0 || this.x > width) this.vx *= -1;
             if (this.y < 0 || this.y > height) this.vy *= -1;
         }
-
-        draw() {
-            ctx.fillStyle = 'rgba(13, 202, 240, 0.5)';
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            ctx.fill();
+        // MODIFIED: Uses global theme color variable
+        draw() { 
+            ctx.fillStyle = `rgba(${window.canvasThemeColor}, 0.5)`; 
+            ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); 
         }
     }
-
-    function init() {
-        resize();
-        particles = [];
-        for (let i = 0; i < particleCount; i++) {
-            particles.push(new Particle());
-        }
-    }
-
+    
+    function init() { resize(); particles = []; for (let i = 0; i < particleCount; i++) particles.push(new Particle()); }
+    
     function animate() {
         ctx.clearRect(0, 0, width, height);
         particles.forEach((p, index) => {
-            p.update();
-            p.draw();
+            p.update(); p.draw();
             for (let j = index + 1; j < particles.length; j++) {
                 const p2 = particles[j];
-                const dx = p.x - p2.x;
-                const dy = p.y - p2.y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
+                const dist = Math.sqrt((p.x - p2.x)**2 + (p.y - p2.y)**2);
                 if (dist < connectionDistance) {
                     ctx.beginPath();
-                    ctx.strokeStyle = `rgba(13, 202, 240, ${1 - dist/connectionDistance})`; 
-                    ctx.lineWidth = 0.5;
-                    ctx.moveTo(p.x, p.y);
-                    ctx.lineTo(p2.x, p2.y);
-                    ctx.stroke();
+                    // MODIFIED: Uses global theme color variable for lines too
+                    ctx.strokeStyle = `rgba(${window.canvasThemeColor}, ${1 - dist/connectionDistance})`; 
+                    ctx.lineWidth = 0.5; ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
                 }
             }
         });
         requestAnimationFrame(animate);
     }
-
-    window.addEventListener('resize', resize);
-    init();
-    animate();
+    window.addEventListener('resize', resize); init(); animate();
 }
