@@ -112,6 +112,16 @@ h1, h2, h3, h4, h5, .sidebar-heading, .navbar-brand {
     color: white;
 }
 
+/* --- NEW: High Contrast Label --- */
+.text-label {
+    color: #c0c0c0 !important; /* Luminous Silver */
+    font-size: 0.65rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 2px;
+}
+
 /* --- Chat Interface --- */
 .chat-card {
     height: auto;         /* Let content dictate height */
@@ -175,7 +185,7 @@ h1, h2, h3, h4, h5, .sidebar-heading, .navbar-brand {
         height: 70vh !important; 
         min-height: 70vh !important;
         max-height: 70vh !important;
-    } /* <--- THIS CLOSING BRACKET WAS MISSING */
+    }
 
     #chat-history {
         /* Ensure the text scrolls INSIDE this fixed box */
@@ -189,7 +199,6 @@ h1, h2, h3, h4, h5, .sidebar-heading, .navbar-brand {
         /* Adds a little breathing room at the bottom for scrolling */
         padding-bottom: 50px; 
     }
-}
     
     /* Adjust margin so it doesn't hit the very bottom of phone screen */
     #section-ai {
