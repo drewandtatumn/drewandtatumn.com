@@ -18,8 +18,7 @@ const SECTORS = {
 
 let currentSector = 'dfw';
 
-// GLOBAL THEME COLOR (RGB Format for Canvas)
-// Default: Cyan Blue (Day Mode)
+// GLOBAL THEME COLOR (RGB Format) - Defaults to Cyan
 window.canvasThemeColor = "13, 202, 240"; 
 
 // --- INITIALIZATION ---
@@ -80,7 +79,7 @@ function updateSector(sectorKey) {
 async function fetchDashboardData(sectorKey) {
     document.getElementById('val-condition').innerText = "ESTABLISHING LINK...";
     document.getElementById('weather-ai-analysis').innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> Decrypting Atmospheric Data...`;
-    document.getElementById('forecast-row').innerHTML = `<div class="col-12 text-center text-secondary small"><i class="fas fa-circle-notch fa-spin"></i> Loading 5-Day Outlook...</div>`;
+    document.getElementById('forecast-row').innerHTML = `<div class="col-12 text-center text-label"><i class="fas fa-circle-notch fa-spin"></i> Loading 5-Day Outlook...</div>`;
 
     try {
         const response = await fetch(WORKER_URL, {
@@ -94,7 +93,7 @@ async function fetchDashboardData(sectorKey) {
         
         const w = data.weather;
 
-        // 1. UPDATE VISUAL THEME BASED ON SUNRISE/SUNSET
+        // 1. UPDATE VISUAL THEME
         updateThemeColor(w.sunrise, w.sunset);
 
         // 2. Update Telemetry
@@ -108,23 +107,20 @@ async function fetchDashboardData(sectorKey) {
         document.getElementById('val-humid').innerText = w.humidity;
         document.getElementById('val-dew').innerText = w.dew_point;
         document.getElementById('val-clouds').innerText = w.clouds;
-        
-        // Visibility
         document.getElementById('val-vis').innerText = (w.visibility / 1609.34).toFixed(1);
 
-        // Sunrise/Sunset
         document.getElementById('val-sunrise').innerText = new Date(w.sunrise * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
         document.getElementById('val-sunset').innerText = new Date(w.sunset * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
-        // Color Logic
+        // 3. Apply Colors
         applyColorLogic(w);
 
-        // Render Forecast
+        // 4. Forecast
         if (data.forecast && data.forecast.length > 0) {
             renderForecast(data.forecast);
         }
 
-        // Briefing
+        // 5. Briefing (Funny Errors appear here)
         if (data.briefing) {
             document.getElementById('weather-ai-analysis').innerHTML = data.briefing.replace(/\*\*(.*?)\*\*/g, '<strong class="text-info">$1</strong>');
         }
@@ -136,34 +132,25 @@ async function fetchDashboardData(sectorKey) {
     }
 }
 
-// --- DYNAMIC THEME ENGINE ---
+// --- VISUAL THEME ENGINE ---
 function updateThemeColor(sunrise, sunset) {
-    const now = Math.floor(Date.now() / 1000); // Current Unix Timestamp
-    
-    // Time Buffers (in seconds)
+    const now = Math.floor(Date.now() / 1000); 
     const thirtyMins = 1800;
-    const fortyFiveMins = 2700;
 
-    let newColor = "13, 202, 240"; // Default: Cyan (Day)
+    let newColor = "13, 202, 240"; // Cyan (Default)
 
     if (now < sunrise - thirtyMins) {
-        // Pre-Dawn Night -> Matrix Green
-        newColor = "0, 255, 0"; 
+        newColor = "0, 255, 0"; // Matrix Green (Night)
     } else if (now >= sunrise - thirtyMins && now < sunrise + thirtyMins) {
-        // Golden Hour (Sunrise) -> Orange
-        newColor = "255, 193, 7"; 
+        newColor = "255, 193, 7"; // Orange (Dawn)
     } else if (now >= sunrise + thirtyMins && now < sunset - thirtyMins) {
-        // Day Operations -> Cyan Blue
-        newColor = "13, 202, 240"; 
-    } else if (now >= sunset - thirtyMins && now < sunset + fortyFiveMins) {
-        // Golden Hour / Twilight -> Manly Purple
-        newColor = "111, 66, 193"; 
+        newColor = "13, 202, 240"; // Cyan (Day)
+    } else if (now >= sunset - thirtyMins && now < sunset + thirtyMins) {
+        newColor = "111, 66, 193"; // Purple (Dusk)
     } else {
-        // Night Operations -> Matrix Green
-        newColor = "0, 255, 0";
+        newColor = "0, 255, 0"; // Matrix Green (Night)
     }
 
-    // Apply Global Variable (Canvas picks this up in the next frame)
     window.canvasThemeColor = newColor;
 }
 
@@ -179,10 +166,10 @@ function renderForecast(forecastData) {
         const html = `
             <div class="col">
                 <div class="card bg-glass text-center p-2 h-100 border-0" style="background: rgba(255,255,255,0.02);">
-                    <small class="text-info d-block mb-1">${dayName}</small>
+                    <small class="text-label text-info mb-1">${dayName}</small>
                     <img src="${iconUrl}" alt="${day.condition}" style="width: 40px; height: 40px;">
                     <div class="fw-bold text-white">${day.temp}°</div>
-                    <small class="text-secondary" style="font-size: 0.6rem;">${day.condition}</small>
+                    <small class="text-label text-white" style="font-size: 0.6rem;">${day.condition}</small>
                 </div>
             </div>
         `;
@@ -214,6 +201,7 @@ function getCardinalDirection(angle) {
 }
 
 /* ================= CHATBOT LOGIC ================= */
+// (Standard chatbot logic logic remains here...)
 let conversationHistory = [];
 function handleEnter(e) { if (e.key === 'Enter') sendMessage(); }
 async function sendMessage() {
@@ -256,7 +244,7 @@ async function sendMessage() {
     chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
 }
 
-// --- NETWORK BACKGROUND ANIMATION (UPDATED FOR DYNAMIC COLOR) ---
+// --- NETWORK BACKGROUND ANIMATION (DYNAMIC COLOR) ---
 function initNetworkAnimation() {
     const canvas = document.getElementById('canvas-network');
     if (!canvas) return;
@@ -277,8 +265,8 @@ function initNetworkAnimation() {
             if (this.x < 0 || this.x > width) this.vx *= -1;
             if (this.y < 0 || this.y > height) this.vy *= -1;
         }
-        // MODIFIED: Uses global theme color variable
         draw() { 
+            // DYNAMIC COLOR
             ctx.fillStyle = `rgba(${window.canvasThemeColor}, 0.5)`; 
             ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); 
         }
@@ -295,7 +283,7 @@ function initNetworkAnimation() {
                 const dist = Math.sqrt((p.x - p2.x)**2 + (p.y - p2.y)**2);
                 if (dist < connectionDistance) {
                     ctx.beginPath();
-                    // MODIFIED: Uses global theme color variable for lines too
+                    // DYNAMIC COLOR
                     ctx.strokeStyle = `rgba(${window.canvasThemeColor}, ${1 - dist/connectionDistance})`; 
                     ctx.lineWidth = 0.5; ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
                 }
