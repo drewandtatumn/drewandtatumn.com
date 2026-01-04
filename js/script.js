@@ -17,9 +17,7 @@ const SECTORS = {
 };
 
 let currentSector = 'dfw';
-
-// GLOBAL THEME COLOR (RGB Format) - Defaults to Cyan
-window.canvasThemeColor = "13, 202, 240"; 
+window.canvasThemeColor = "13, 202, 240"; // Default Cyan
 
 // --- INITIALIZATION ---
 window.onload = function() {
@@ -79,7 +77,14 @@ function updateSector(sectorKey) {
 async function fetchDashboardData(sectorKey) {
     document.getElementById('val-condition').innerText = "ESTABLISHING LINK...";
     document.getElementById('weather-ai-analysis').innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> Decrypting Atmospheric Data...`;
-    document.getElementById('forecast-row').innerHTML = `<div class="col-12 text-center text-label"><i class="fas fa-circle-notch fa-spin"></i> Loading 5-Day Outlook...</div>`;
+    
+    // Brief loading state for forecast
+    const forecastRow = document.getElementById('forecast-row');
+    if(forecastRow.innerHTML.includes("Loading")) {
+        // Keep loading msg
+    } else {
+        // Only clear if empty
+    }
 
     try {
         const response = await fetch(WORKER_URL, {
@@ -115,7 +120,7 @@ async function fetchDashboardData(sectorKey) {
         // 3. Apply Colors
         applyColorLogic(w);
 
-        // 4. Forecast
+        // 4. Forecast with Moon Phase
         if (data.forecast && data.forecast.length > 0) {
             renderForecast(data.forecast);
         }
@@ -127,31 +132,33 @@ async function fetchDashboardData(sectorKey) {
 
     } catch (e) {
         console.error("Dashboard Error:", e);
-        document.getElementById('weather-ai-analysis').innerText = "⚠ CONNECTION FAILURE. ORACLE OFFLINE.";
+        document.getElementById('weather-ai-analysis').innerHTML = "<span class='text-danger'>⚠ UPLINK FAILED.</span>";
         document.getElementById('val-condition').innerText = "OFFLINE";
     }
 }
 
-// --- VISUAL THEME ENGINE ---
-function updateThemeColor(sunrise, sunset) {
-    const now = Math.floor(Date.now() / 1000); 
-    const thirtyMins = 1800;
-
-    let newColor = "13, 202, 240"; // Cyan (Default)
-
-    if (now < sunrise - thirtyMins) {
-        newColor = "0, 255, 0"; // Matrix Green (Night)
-    } else if (now >= sunrise - thirtyMins && now < sunrise + thirtyMins) {
-        newColor = "255, 193, 7"; // Orange (Dawn)
-    } else if (now >= sunrise + thirtyMins && now < sunset - thirtyMins) {
-        newColor = "13, 202, 240"; // Cyan (Day)
-    } else if (now >= sunset - thirtyMins && now < sunset + thirtyMins) {
-        newColor = "111, 66, 193"; // Purple (Dusk)
-    } else {
-        newColor = "0, 255, 0"; // Matrix Green (Night)
-    }
-
-    window.canvasThemeColor = newColor;
+// --- MOON & FORECAST LOGIC ---
+function getMoonPhase(date) {
+    // Simple Synodic Month Calculation
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    
+    let c = e = jd = b = 0;
+    if (month < 3) { year--; month += 12; }
+    ++month;
+    c = 365.25 * year;
+    e = 30.6 * month;
+    jd = c + e + day - 694039.09; // jd is total days elapsed
+    jd /= 29.5305882; // Divide by lunar cycle
+    b = parseInt(jd); // Integer part
+    jd -= b; // Fractional part is phase
+    b = Math.round(jd * 8); // 8 Phases
+    
+    if (b >= 8 ) b = 0;
+    
+    const phases = ['🌑', '🌒', '🌓', '🌔', '🌕', '🌖', '🌗', '🌘'];
+    return phases[b];
 }
 
 function renderForecast(forecastData) {
@@ -161,20 +168,52 @@ function renderForecast(forecastData) {
     forecastData.forEach(day => {
         const dateObj = new Date(day.date * 1000);
         const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'short' });
+        const moon = getMoonPhase(dateObj);
         const iconUrl = `https://openweathermap.org/img/wn/${day.icon}.png`;
 
         const html = `
             <div class="col">
                 <div class="card bg-glass text-center p-2 h-100 border-0" style="background: rgba(255,255,255,0.02);">
-                    <small class="text-label text-info mb-1">${dayName}</small>
-                    <img src="${iconUrl}" alt="${day.condition}" style="width: 40px; height: 40px;">
-                    <div class="fw-bold text-white">${day.temp}°</div>
-                    <small class="text-label text-white" style="font-size: 0.6rem;">${day.condition}</small>
+                    <div class="d-flex justify-content-between px-2 text-label">
+                        <span>${dayName}</span>
+                        <span>${moon}</span>
+                    </div>
+                    <img src="${iconUrl}" alt="${day.condition}" style="width: 40px; height: 40px; margin: 0 auto;">
+                    <div class="text-white fw-bold my-1">
+                        <span class="text-danger">${day.high}°</span> <span class="text-secondary">/</span> <span class="text-info">${day.low}°</span>
+                    </div>
+                    <div class="d-flex justify-content-center gap-2 mt-1">
+                        <small class="text-info" title="Rain Chance"><i class="fas fa-umbrella"></i> ${day.pop}%</small>
+                        <small class="text-secondary" title="Wind"><i class="fas fa-wind"></i> ${day.wind}</small>
+                    </div>
                 </div>
             </div>
         `;
         container.innerHTML += html;
     });
+}
+
+// --- VISUAL THEME ENGINE ---
+function updateThemeColor(sunrise, sunset) {
+    const now = Math.floor(Date.now() / 1000); 
+    const thirtyMins = 1800;
+    const fortyFiveMins = 2700;
+
+    let newColor = "13, 202, 240"; // Cyan (Default)
+
+    if (now < sunrise - thirtyMins) {
+        newColor = "0, 255, 0"; // Matrix Green (Night)
+    } else if (now >= sunrise - thirtyMins && now < sunrise + thirtyMins) {
+        newColor = "255, 193, 7"; // Orange (Dawn)
+    } else if (now >= sunrise + thirtyMins && now < sunset - thirtyMins) {
+        newColor = "13, 202, 240"; // Cyan (Day)
+    } else if (now >= sunset - thirtyMins && now < sunset + fortyFiveMins) {
+        newColor = "111, 66, 193"; // Purple (Dusk)
+    } else {
+        newColor = "0, 255, 0"; // Matrix Green (Night)
+    }
+
+    window.canvasThemeColor = newColor;
 }
 
 function applyColorLogic(w) {
@@ -201,7 +240,7 @@ function getCardinalDirection(angle) {
 }
 
 /* ================= CHATBOT LOGIC ================= */
-// (Standard chatbot logic logic remains here...)
+// (Same as before)
 let conversationHistory = [];
 function handleEnter(e) { if (e.key === 'Enter') sendMessage(); }
 async function sendMessage() {
@@ -244,7 +283,7 @@ async function sendMessage() {
     chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
 }
 
-// --- NETWORK BACKGROUND ANIMATION (DYNAMIC COLOR) ---
+// --- NETWORK BACKGROUND ANIMATION (ZODIAC + THEME) ---
 function initNetworkAnimation() {
     const canvas = document.getElementById('canvas-network');
     if (!canvas) return;
@@ -254,6 +293,26 @@ function initNetworkAnimation() {
 
     function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; }
     
+    function getZodiacSymbol() {
+        const date = new Date();
+        const d = date.getDate();
+        const m = date.getMonth() + 1; 
+        // Simple Zodiac Logic
+        if((m==1 && d<=19) || (m==12 && d>=22)) return '♑'; // Capricorn
+        if((m==1 && d>=20) || (m==2 && d<=18)) return '♒'; // Aquarius
+        if((m==2 && d>=19) || (m==3 && d<=20)) return '♓'; // Pisces
+        if((m==3 && d>=21) || (m==4 && d<=19)) return '♈'; // Aries
+        if((m==4 && d>=20) || (m==5 && d<=20)) return '♉'; // Taurus
+        if((m==5 && d>=21) || (m==6 && d<=20)) return '♊'; // Gemini
+        if((m==6 && d>=21) || (m==7 && d<=22)) return '♋'; // Cancer
+        if((m==7 && d>=23) || (m==8 && d<=22)) return '♌'; // Leo
+        if((m==8 && d>=23) || (m==9 && d<=22)) return '♍'; // Virgo
+        if((m==9 && d>=23) || (m==10 && d<=22)) return '♎'; // Libra
+        if((m==10 && d>=23) || (m==11 && d<=21)) return '♏'; // Scorpio
+        if((m==11 && d>=22) || (m==12 && d<=21)) return '♐'; // Sagittarius
+        return '';
+    }
+
     class Particle {
         constructor() {
             this.x = Math.random() * width; this.y = Math.random() * height;
@@ -266,7 +325,6 @@ function initNetworkAnimation() {
             if (this.y < 0 || this.y > height) this.vy *= -1;
         }
         draw() { 
-            // DYNAMIC COLOR
             ctx.fillStyle = `rgba(${window.canvasThemeColor}, 0.5)`; 
             ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); 
         }
@@ -276,6 +334,14 @@ function initNetworkAnimation() {
     
     function animate() {
         ctx.clearRect(0, 0, width, height);
+        
+        // Draw Zodiac Watermark
+        ctx.font = "200px serif";
+        ctx.fillStyle = `rgba(${window.canvasThemeColor}, 0.05)`; // Very subtle watermark
+        ctx.textAlign = "right";
+        ctx.textBaseline = "bottom";
+        ctx.fillText(getZodiacSymbol(), width - 20, height - 20);
+
         particles.forEach((p, index) => {
             p.update(); p.draw();
             for (let j = index + 1; j < particles.length; j++) {
@@ -283,7 +349,6 @@ function initNetworkAnimation() {
                 const dist = Math.sqrt((p.x - p2.x)**2 + (p.y - p2.y)**2);
                 if (dist < connectionDistance) {
                     ctx.beginPath();
-                    // DYNAMIC COLOR
                     ctx.strokeStyle = `rgba(${window.canvasThemeColor}, ${1 - dist/connectionDistance})`; 
                     ctx.lineWidth = 0.5; ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
                 }
