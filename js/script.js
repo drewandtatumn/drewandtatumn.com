@@ -120,7 +120,7 @@ async function fetchDashboardData(sectorKey) {
             renderForecast(data.forecast);
         }
 
-        // 5. Briefing (Funny Errors appear here)
+        // 5. Briefing
         if (data.briefing) {
             document.getElementById('weather-ai-analysis').innerHTML = data.briefing.replace(/\*\*(.*?)\*\*/g, '<strong class="text-info">$1</strong>');
         }
