@@ -1,15 +1,17 @@
 // js/weather.js
-// SKYNET V2.5 - EXPONENTIAL BACKOFF PROTOCOL
+// SKYNET V2.6 - STABILITY PATCH (Moon Phase Logic Fix)
 
 const SECTORS = {
     dfw: {
         name: "McKinney, TX",
-        radarUrl: "https://embed.windy.com/embed2.html?lat=32.8998&lon=-97.0403&detailLat=32.8998&detailLon=-97.0403&width=650&height=450&zoom=9&level=surface&overlay=rain&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=mph&metricTemp=°F&radarRange=-1",
+        // Updated Radar: Increased source dimensions to 1000x600 to fill container
+        radarUrl: "https://embed.windy.com/embed2.html?lat=32.8998&lon=-97.0403&detailLat=32.8998&detailLon=-97.0403&width=1000&height=600&zoom=9&level=surface&overlay=rain&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=mph&metricTemp=°F&radarRange=-1",
         videoUrl: "https://www.youtube.com/embed/HkfKsRa9qnE?autoplay=1&mute=1&controls=0&rel=0"
     },
     slc: {
         name: "Salt Lake City, UT",
-        radarUrl: "https://embed.windy.com/embed2.html?lat=40.7608&lon=-111.8910&detailLat=40.7608&detailLon=-111.8910&width=650&height=450&zoom=9&level=surface&overlay=rain&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=mph&metricTemp=°F&radarRange=-1",
+        // Updated Radar: Increased source dimensions to 1000x600 to fill container
+        radarUrl: "https://embed.windy.com/embed2.html?lat=40.7608&lon=-111.8910&detailLat=40.7608&detailLon=-111.8910&width=1000&height=600&zoom=9&level=surface&overlay=rain&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=mph&metricTemp=°F&radarRange=-1",
         videoUrl: "https://video.nest.com/embedded/live/qAupZ0qsW2?autoplay=1"
     }
 };
@@ -35,14 +37,13 @@ const SAFE_MODE_DATA = {
 
 let currentSector = 'dfw';
 let retryCount = 0;
-// Backoff strategy: Wait 5s, then 15s, then 30s before giving up
 const retryDelays = [5000, 15000, 30000]; 
 
 // --- INITIALIZATION ---
 initWeather();
 
 function initWeather() {
-    retryCount = 0; // Reset retries on manual refresh
+    retryCount = 0; 
     updateSector(currentSector);
 }
 
@@ -76,14 +77,12 @@ async function fetchDashboardData(sectorKey) {
     const condEl = document.getElementById('val-condition');
     const aiEl = document.getElementById('weather-ai-analysis');
     
-    // Only show "PINGING" on the first try, not on automatic retries
     if(retryCount === 0) {
         if(condEl) condEl.innerText = "PINGING...";
         if(aiEl) aiEl.innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> Establishing Uplink...`;
     }
 
     try {
-        // ATTEMPT LIVE CONNECTION
         const response = await fetch(WORKER_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -95,15 +94,13 @@ async function fetchDashboardData(sectorKey) {
         const data = await response.json();
         if (!data || !data.weather) throw new Error("Invalid telemetry received");
         
-        // SUCCESS: Render Real Data
-        retryCount = 0; // Reset counter on success
+        retryCount = 0; 
         renderDashboard(data, false);
 
     } catch (e) {
         console.warn(`Attempt Failed. Retry Level: ${retryCount}`, e);
         
         if (retryCount < retryDelays.length) {
-            // RETRY LOGIC (Exponential Backoff)
             const delay = retryDelays[retryCount];
             if(aiEl) aiEl.innerHTML = `<span class="text-warning"><i class="fas fa-satellite-dish"></i> Uplink Weak. Retrying in ${delay/1000}s...</span>`;
             
@@ -112,7 +109,6 @@ async function fetchDashboardData(sectorKey) {
                 fetchDashboardData(sectorKey);
             }, delay);
         } else {
-            // GIVE UP -> RENDER SAFE MODE
             renderDashboard(SAFE_MODE_DATA, true);
         }
     }
@@ -122,10 +118,8 @@ function renderDashboard(data, isSimulation) {
     const w = data.weather;
     const aiEl = document.getElementById('weather-ai-analysis');
 
-    // 1. Theme Engine (Safe Wrapped)
     try { updateThemeColor(w.sunrise, w.sunset); } catch(e) { console.error("Theme Error", e); }
 
-    // 2. Telemetry (Wrap in try/catch so partial failures don't stop the rest)
     try {
         document.getElementById('val-temp').innerText = w.temp + "°";
         document.getElementById('val-feels').innerText = w.feels_like + "°";
@@ -145,12 +139,10 @@ function renderDashboard(data, isSimulation) {
         applyColorLogic(w);
     } catch (e) { console.error("Telemetry Error", e); }
 
-    // 3. Forecast
     try {
         if(data.forecast) renderForecast(data.forecast);
     } catch (e) { console.error("Forecast Error", e); }
 
-    // 4. Briefing & Simulation Warning
     if (aiEl) {
         if (isSimulation) {
             aiEl.innerHTML = `<span class="text-danger">⚠ UPLINK FAILED.</span><br>Problem with weather API - try going outside if you want to see the weather :)`;
@@ -165,10 +157,12 @@ function renderDashboard(data, isSimulation) {
 // --- HELPERS ---
 
 function getMoonPhase(date) {
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
+    // FIX: Changed 'const' to 'let' because we modify these variables below
+    let year = date.getFullYear();
+    let month = date.getMonth() + 1;
     const day = date.getDate();
     let c = e = jd = b = 0;
+    
     if (month < 3) { year--; month += 12; }
     ++month;
     c = 365.25 * year;
