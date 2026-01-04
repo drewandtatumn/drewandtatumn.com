@@ -4,9 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mathis Global Industries</title>
+    <meta name="description" content="Mathis Global Industries (M.G.I.) is the premier provider of household logistics, lawn agronomy, and custom automation solutions in North Texas.">
+    <meta name="keywords" content="Mathis Global Industries, Mowing Best, Drew Mathis, Tatumn Mathis, RevOps, Google Apps Script, McKinney, Lawn Care Automation, Home Lab, AI Dashboard">
+    <meta name="author" content="Drew Mathis">
+    <meta name="robots" content="index, follow">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://drewandtatumn.github.io/">
+    <meta property="og:title" content="Mathis Global Industries | Operational Efficiency Solved">
+    <meta property="og:description" content="Authorized Personnel Only. Access the Oracle, Weather Command, and Operations HQ.">
+    <meta property="og:image" content="https://drewandtatumn.github.io/images/logo.png">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="M.G.I. Command Center">
+    <meta name="twitter:description" content="Over-engineering simple household problems since 2024.">
+    <meta name="twitter:image" content="https://drewandtatumn.github.io/images/logo.png">
+    
+    <link rel="icon" type="image/png" href="images/mgi-favicon-256px.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;400;500;600&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -14,50 +35,118 @@
     <canvas id="canvas-network"></canvas>
 
     <div class="d-flex" id="wrapper">
+        
         <div id="sidebar-wrapper">
             <div class="text-end p-3 d-md-none">
-                <button class="btn btn-sm btn-outline-danger" id="menu-close"><i class="fas fa-times"></i> Close</button>
+                <button class="btn btn-sm btn-outline-danger" id="menu-close">
+                    <i class="fas fa-times"></i> Close
+                </button>
             </div>
+
             <div class="sidebar-heading">
                 <i class="fas fa-atom fa-2x mb-2 text-info"></i><br>
                 M.G.I.<br>
                 <small class="text-white" style="font-size: 0.6rem; opacity: 0.8;">EST. 2024</small>
             </div>
             <div class="list-group list-group-flush">
-                <a href="#home" class="list-group-item active-link" onclick="showSection('home')"><i class="fas fa-home me-3"></i> HQ</a>
-                <a href="#ai" class="list-group-item" onclick="showSection('ai')"><i class="fas fa-brain me-3"></i> The Oracle (AI)</a>
-                <a href="#weather" class="list-group-item" onclick="showSection('weather')"><i class="fas fa-cloud-sun-rain me-3"></i> SkyNet (Weather)</a>
-                <a href="#projects" class="list-group-item" onclick="showSection('projects')"><i class="fas fa-code-branch me-3"></i> Projects</a>
+                <a href="#home" class="list-group-item active-link" onclick="showSection('home')">
+                    <i class="fas fa-home me-3"></i> HQ
+                </a>
+                <a href="#ai" class="list-group-item" onclick="showSection('ai')">
+                    <i class="fas fa-brain me-3"></i> The Oracle (AI)
+                </a>
+                <a href="#weather" class="list-group-item" onclick="showSection('weather')">
+                    <i class="fas fa-cloud-sun-rain me-3"></i> SkyNet (Weather)
+                </a>
+                <a href="#projects" class="list-group-item" onclick="showSection('projects')">
+                    <i class="fas fa-code-branch me-3"></i> Projects
+                </a>
             </div>
         </div>
 
         <div id="page-content-wrapper">
+            
             <nav class="navbar navbar-dark bg-transparent py-3 px-4">
                 <button class="btn btn-outline-light d-md-none" id="menu-toggle"><i class="fas fa-bars"></i></button>
+                
                 <div class="ms-auto d-flex align-items-center">
                     <span class="text-secondary me-3 d-none d-sm-block small">Authorized Personnel Only</span>
-                    <a href="#" class="btn btn-login-glow"><i class="fas fa-lock me-2"></i> Family Login</a>
+                    <a href="https://private.drewandtatumn.com" class="btn btn-login-glow">
+                        <i class="fas fa-lock me-2"></i> Family Login
+                    </a>
                 </div>
             </nav>
 
             <div class="container-fluid content-section text-center fade-in" id="section-home">
-                 <h1 class="display-3 fw-bold text-white">M.G.I. <span class="text-info">HQ</span></h1>
+                <div class="hero-box">
+                    <h1 class="display-3 fw-bold text-white mb-3">Mathis Global <span class="text-info">Industries</span></h1>
+                    <p class="lead text-secondary mb-4">
+                        "Over-engineering simple household problems since 2024."
+                    </p>
+                    <div class="row justify-content-center mt-5">
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <h3>327</h3>
+                                <small>Lines of Code to turn on a lightbulb</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <h3>99%</h3>
+                                <small>Uptime (When Drew is awake)</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <h3>0</h3>
+                                <small>Gluten Incidents (This week)</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row justify-content-center mt-4">
+                    <div class="col-md-8">
+                        <div class="card bg-glass h-100">
+                            <div class="card-body text-start p-4">
+                                <h4 class="text-info mb-3"><i class="fas fa-terminal me-2"></i> Operational Directive</h4>
+                                <p class="text-light" style="font-size: 1.1rem; line-height: 1.6;">
+                                    Welcome to <strong>Mathis Global Industries</strong> (M.G.I.), the world's premier fictional conglomerate dedicated to the over-engineering of domestic life in McKinney, TX.
+                                </p>
+                                <p class="text-secondary">
+                                    Founded by <strong>Drew Mathis</strong> (Chief Automation Officer & Apps Script Warlock) and <strong>Tatumn Mathis</strong> (Chief Inspiration Officer & Classroom Miracle Worker), M.G.I. operates on a simple philosophy: 
+                                    <em class="text-white">"Why spend 5 minutes doing a task manually when you can spend 3 weeks writing code to do it automatically?"</em>
+                                </p>
+                                
+                                <hr class="border-secondary my-4">
+                                
+                                <h6 class="text-muted text-uppercase small letter-spacing-2">Live System Logs</h6>
+                                <div class="p-2 rounded" style="background: rgba(0,0,0,0.3); font-family: monospace; font-size: 0.85rem; color: #0dcaf0;">
+                                    <div class="mb-1"><span class="text-secondary">[12:00:01]</span> CORE_SYSTEMS: <span class="text-success">ONLINE</span></div>
+                                    <div class="mb-1"><span class="text-secondary">[12:00:05]</span> AGRO_BOT: Scanning Bermuda grass nutrient levels...</div>
+                                    <div class="mb-1"><span class="text-secondary">[12:00:12]</span> GLUTEN_DETECTOR: <span class="text-success">NEGATIVE</span> (Safe for Tatumn)</div>
+                                    <div><span class="text-secondary">[12:00:15]</span> CAFFEINE_LEVELS: <span class="text-warning">CRITICAL (Refill Imminent)</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="container-fluid content-section d-none" id="section-ai">
-                <div class="row h-100">
-                    <div class="col-md-8 offset-md-2 h-100">
-                        <h2 class="text-white mb-3">The Oracle</h2>
-                        <div class="card chat-card">
-                            <div id="chat-history">
-                                <div class="ai-message">
-                                    <span class="badge bg-info text-dark mb-1">Oracle</span><br>
-                                    Systems online.
+                <div class="row">
+                    <div class="col-md-8 offset-md-2">
+                        <h2 class="text-white mb-4">The Oracle</h2>
+                        <div class="card bg-glass chat-card">
+                            <div class="card-body d-flex flex-column">
+                                <div id="chat-history" class="flex-grow-1 overflow-auto mb-3 p-2">
+                                    <div class="ai-message mb-2">
+                                        <span class="badge bg-info text-dark mb-1">Oracle</span><br>
+                                        Systems online. How can I assist?
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="p-3 border-top border-secondary">
                                 <div class="input-group">
-                                    <input type="text" id="user-input" class="form-control bg-transparent text-white border-secondary" placeholder="Command..." onkeypress="handleEnter(event)">
+                                    <input type="text" id="user-input" class="form-control bg-transparent text-white border-secondary" placeholder="Ask the Oracle..." onkeypress="handleEnter(event)">
                                     <button class="btn btn-info" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
                                 </div>
                             </div>
@@ -67,8 +156,9 @@
             </div>
 
             <div class="container-fluid content-section d-none" id="section-weather">
-                <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-4">
                     <h2 class="text-white m-0">Atmospheric Conditions</h2>
+                    
                     <div class="btn-group">
                         <button class="btn btn-sm btn-outline-info active" id="btn-dfw" onclick="updateSector('dfw')">DFW</button>
                         <button class="btn btn-sm btn-outline-secondary" id="btn-slc" onclick="updateSector('slc')">SLC</button>
@@ -76,66 +166,81 @@
                 </div>
                 
                 <div class="row mb-4 fade-in" id="forecast-row">
-                    <div class="col-12 text-center text-label"><i class="fas fa-circle-notch fa-spin"></i> Initializing...</div>
+                    <div class="col-12 text-center text-label"><i class="fas fa-circle-notch fa-spin"></i> Loading 5-Day Outlook...</div>
                 </div>
 
-                <div class="row g-4">
+                <div class="row g-4 mb-4">
                     <div class="col-lg-7">
-                        <div class="card bg-glass mb-4">
-                            <div class="card-header border-0 bg-transparent py-2">
-                                <small class="text-warning text-label"><i class="fas fa-radar me-2"></i> Live Doppler</small>
-                            </div>
-                            <div class="card-body p-0 ratio ratio-5x4"> <iframe id="weather-radar" class="w-100 h-100 rounded-bottom" style="border: none;" src=""></iframe>
-                            </div>
-                        </div>
-                        <div class="card bg-glass">
-                            <div class="card-header border-0 bg-transparent py-2">
-                                <small class="text-info text-label"><i class="fas fa-video me-2"></i> Live Feed</small>
-                            </div>
-                            <div class="card-body p-0 ratio ratio-16x9">
-                                <iframe id="weather-video" src="" title="Live Feed" allowfullscreen></iframe>
+                        <div class="card bg-glass h-100 border-info">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="card-title text-info m-0"><i class="fas fa-brain me-2"></i> Operational Briefing</h5>
+                                    <button class="btn btn-sm btn-link text-info p-0" onclick="fetchDashboardData(currentSector)"><i class="fas fa-sync-alt"></i></button>
+                                </div>
+                                <p class="card-text text-white" id="weather-ai-analysis" style="font-size: 1.2rem; line-height: 1.5; font-family: 'Rajdhani', monospace;">
+                                    <i class="fas fa-circle-notch fa-spin"></i> Establishing Uplink...
+                                </p>
                             </div>
                         </div>
                     </div>
 
                     <div class="col-lg-5">
-                        <div class="card bg-glass border-info mb-4">
-                            <div class="card-body">
-                                <h5 class="card-title text-info m-0 mb-3"><i class="fas fa-brain me-2"></i> Operational Briefing</h5>
-                                <p class="card-text text-white" id="weather-ai-analysis" style="font-size: 1rem; line-height: 1.4; font-family: 'Rajdhani', monospace;">
-                                    <i class="fas fa-circle-notch fa-spin"></i> Uplink...
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="card bg-glass">
+                        <div class="card bg-glass h-100">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <div class="text-start">
                                         <div class="display-4 fw-bold text-white me-3" id="val-temp">--°</div>
+                                        <span class="text-info fw-bold small" id="sector-label">SECTOR: DFW</span>
                                     </div>
                                     <div class="text-end">
                                         <div class="small fw-bold text-white" id="val-condition">SCANNING...</div>
                                         <div class="text-label small">FEELS LIKE <span id="val-feels">--°</span></div>
                                     </div>
                                 </div>
-                                <hr class="border-secondary opacity-25">
                                 
+                                <hr class="border-secondary opacity-25">
+
                                 <div class="row g-2 text-center">
-                                    <div class="col-4"><div class="data-tile" data-title="Speed of air movement"><span class="text-label">WIND</span><span class="text-value" id="val-wind">--</span></div></div>
-                                    <div class="col-4"><div class="data-tile" data-title="Peak instantaneous speed"><span class="text-label">GUSTS</span><span class="text-value" id="val-gust">--</span></div></div>
-                                    <div class="col-4"><div class="data-tile" data-title="Compass heading"><span class="text-label">DIR</span><span class="text-info fw-bold" id="val-wind-dir">--</span></div></div>
+                                    <div class="col-4"><div class="data-tile"><span class="text-label">WIND</span><span class="text-value" id="val-wind">--</span></div></div>
+                                    <div class="col-4"><div class="data-tile"><span class="text-label">GUSTS</span><span class="text-value" id="val-gust">--</span></div></div>
+                                    <div class="col-4"><div class="data-tile"><span class="text-label">DIR</span><span class="text-info fw-bold" id="val-wind-dir">--</span></div></div>
 
-                                    <div class="col-4"><div class="data-tile" data-title="Moisture saturation %"><span class="text-label">HUMIDITY</span><span class="text-value"><span id="val-humid">--</span>%</span></div></div>
-                                    <div class="col-4"><div class="data-tile" data-title="Temp where condensation forms"><span class="text-label">DEW PT</span><span class="text-value"><span id="val-dew">--</span>°</span></div></div>
-                                    <div class="col-4"><div class="data-tile" data-title="Atmospheric weight"><span class="text-label">PRESSURE</span><span class="text-warning fw-bold"><span id="val-pressure">--</span></span></div></div>
+                                    <div class="col-4"><div class="data-tile"><span class="text-label">HUMIDITY</span><span class="text-value"><span id="val-humid">--</span>%</span></div></div>
+                                    <div class="col-4"><div class="data-tile"><span class="text-label">DEW PT</span><span class="text-value"><span id="val-dew">--</span>°</span></div></div>
+                                    <div class="col-4"><div class="data-tile"><span class="text-label">PRESSURE</span><span class="text-warning fw-bold"><span id="val-pressure">--</span></span></div></div>
 
-                                    <div class="col-4"><div class="data-tile" data-title="Distance of clear sight"><span class="text-label">VISIBILITY</span><span class="text-value"><span id="val-vis">--</span> mi</span></div></div>
-                                    <div class="col-4"><div class="data-tile" data-title="Sky coverage %"><span class="text-label">CLOUDS</span><span class="text-value"><span id="val-clouds">--</span>%</span></div></div>
-                                    <div class="col-4"><div class="data-tile" data-title="Ultraviolet radiation intensity"><span class="text-label">UV</span><span class="text-value">--</span></div></div>
+                                    <div class="col-4"><div class="data-tile"><span class="text-label">VISIBILITY</span><span class="text-value"><span id="val-vis">--</span> mi</span></div></div>
+                                    <div class="col-4"><div class="data-tile"><span class="text-label">CLOUDS</span><span class="text-value"><span id="val-clouds">--</span>%</span></div></div>
+                                    <div class="col-4"><div class="data-tile"><span class="text-label">UV</span><span class="text-value">--</span></div></div>
 
-                                    <div class="col-6"><div class="data-tile" data-title="First light"><span class="text-label">SUNRISE</span><span class="text-value" id="val-sunrise">--:--</span></div></div>
-                                    <div class="col-6"><div class="data-tile" data-title="Last light"><span class="text-label">SUNSET</span><span class="text-value" id="val-sunset">--:--</span></div></div>
+                                    <div class="col-6"><div class="data-tile"><span class="text-label">SUNRISE</span><span class="text-value" id="val-sunrise">--:--</span></div></div>
+                                    <div class="col-6"><div class="data-tile"><span class="text-label">SUNSET</span><span class="text-value" id="val-sunset">--:--</span></div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-lg-6">
+                        <div class="card bg-glass h-100">
+                            <div class="card-header border-0 bg-transparent py-2">
+                                <small class="text-warning text-label"><i class="fas fa-radar me-2"></i> Live Doppler Radar</small>
+                            </div>
+                            <div class="card-body p-0">
+                                <iframe id="weather-radar" class="w-100 rounded-bottom" style="height: 350px; border: none;" src=""></iframe>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <div class="card bg-glass h-100">
+                            <div class="card-header border-0 bg-transparent py-2">
+                                <small class="text-info text-label"><i class="fas fa-video me-2"></i> Live Sector Feed</small>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="ratio ratio-16x9">
+                                    <iframe id="weather-video" src="" title="Live Feed" allowfullscreen></iframe>
                                 </div>
                             </div>
                         </div>
@@ -143,8 +248,37 @@
                 </div>
             </div>
 
-            <footer class="text-center text-secondary py-3 mt-auto border-top border-secondary">
-                <small>&copy; 2026 Mathis Global Industries.</small>
+            <div class="container-fluid content-section d-none" id="section-projects">
+                <h2 class="text-white mb-4">Active Operations</h2>
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="card bg-glass h-100">
+                            <div class="card-body">
+                                <h5><i class="fas fa-receipt text-success me-2"></i> Receipt Assassin</h5>
+                                <p class="text-secondary small mt-2">
+                                    Automated AI-driven expense tracking.
+                                </p>
+                                <span class="badge border border-success text-success">Operational</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card bg-glass h-100">
+                            <div class="card-body">
+                                <h5><i class="fas fa-leaf text-success me-2"></i> Mowing Best Ops</h5>
+                                <p class="text-secondary small mt-2">
+                                    CRM and Agronomy cheat sheets.
+                                </p>
+                                <span class="badge border border-warning text-warning">In Development</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <footer class="text-center text-secondary py-4 mt-5 border-top border-secondary" style="border-color: rgba(255,255,255,0.1) !important;">
+                <small>&copy; 2026 Mathis Global Industries. All Systems Nominal.</small><br>
+                <small style="font-size: 0.7rem;">Powered by Cloudflare, Gemini, and B-Vitamins.</small>
             </footer>
         </div>
     </div>
