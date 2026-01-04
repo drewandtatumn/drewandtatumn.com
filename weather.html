@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mathis Global Industries | SkyNet Weather</title>
+    <meta name="description" content="Mathis Global Industries (M.G.I.) - SkyNet Atmospheric Monitoring.">
+    <meta name="author" content="Drew Mathis">
+    <meta name="robots" content="noindex, nofollow">
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="M.G.I. | SkyNet">
+    
+    <link rel="icon" type="image/png" href="images/mgi-favicon-256px.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <canvas id="canvas-network"></canvas>
+
+    <div class="d-flex" id="wrapper">
+        
+        <div id="sidebar-wrapper">
+            <div class="text-end p-3 d-md-none">
+                <button class="btn btn-sm btn-outline-danger" id="menu-close">
+                    <i class="fas fa-times"></i> Close
+                </button>
+            </div>
+
+            <div class="sidebar-heading">
+                <i class="fas fa-atom fa-2x mb-2 text-info"></i><br>
+                M.G.I.<br>
+                <small class="text-white" style="font-size: 0.6rem; opacity: 0.8;">EST. 2024</small>
+            </div>
+            <div class="list-group list-group-flush">
+                <a href="index.html" class="list-group-item">
+                    <i class="fas fa-home me-3"></i> HQ
+                </a>
+                <a href="ai.html" class="list-group-item">
+                    <i class="fas fa-brain me-3"></i> The Oracle (AI)
+                </a>
+                <a href="weather.html" class="list-group-item active-link">
+                    <i class="fas fa-cloud-sun-rain me-3"></i> SkyNet (Weather)
+                </a>
+                <a href="projects.html" class="list-group-item">
+                    <i class="fas fa-code-branch me-3"></i> Projects
+                </a>
+            </div>
+        </div>
+
+        <div id="page-content-wrapper">
+            
+            <nav class="navbar navbar-dark bg-transparent py-3 px-4">
+                <button class="btn btn-outline-light d-md-none" id="menu-toggle"><i class="fas fa-bars"></i></button>
+                
+                <div class="ms-auto d-flex align-items-center">
+                    <span class="text-secondary me-3 d-none d-sm-block small">Authorized Personnel Only</span>
+                    <a href="https://private.drewandtatumn.com" class="btn btn-login-glow">
+                        <i class="fas fa-lock me-2"></i> Family Login
+                    </a>
+                </div>
+            </nav>
+
+            <div class="container-fluid content-section" id="section-weather">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="text-white m-0">Atmospheric Conditions</h2>
+                    
+                    <div class="btn-group">
+                        <button class="btn btn-sm btn-outline-info active" id="btn-dfw" onclick="updateSector('dfw')">DFW</button>
+                        <button class="btn btn-sm btn-outline-secondary" id="btn-slc" onclick="updateSector('slc')">SLC</button>
+                    </div>
+                </div>
+                
+                <div class="row mb-4 fade-in" id="forecast-row">
+                    <div class="col-12 text-center text-label"><i class="fas fa-circle-notch fa-spin"></i> Loading 5-Day Outlook...</div>
+                </div>
+
+                <div class="row g-4 mb-4">
+                    <div class="col-lg-7">
+                        <div class="card bg-glass h-100 border-info">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="card-title text-info m-0"><i class="fas fa-brain me-2"></i> Operational Briefing</h5>
+                                    <button class="btn btn-sm btn-link text-info p-0" onclick="fetchDashboardData(currentSector)"><i class="fas fa-sync-alt"></i></button>
+                                </div>
+                                <p class="card-text text-white" id="weather-ai-analysis" style="font-size: 1.2rem; line-height: 1.5; font-family: 'Rajdhani', monospace;">
+                                    <i class="fas fa-circle-notch fa-spin"></i> Establishing Uplink...
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-5">
+                        <div class="card bg-glass h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div class="text-start">
+                                        <div class="display-4 fw-bold text-white me-3" id="val-temp">--°</div>
+                                        <span class="text-info fw-bold small" id="sector-label">SECTOR: DFW</span>
+                                    </div>
+                                    <div class="text-end">
+                                        <div class="small fw-bold text-white" id="val-condition">SCANNING...</div>
+                                        <div class="text-label small">FEELS LIKE <span id="val-feels">--°</span></div>
+                                    </div>
+                                </div>
+                                
+                                <hr class="border-secondary opacity-25">
+
+                                <div class="row g-2 text-center">
+                                    <div class="col-4"><div class="data-tile"><span class="text-label">WIND</span><span class="text-value" id="val-wind">--</span></div></div>
+                                    <div class="col-4"><div class="data-tile"><span class="text-label">GUSTS</span><span class="text-value" id="val-gust">--</span></div></div>
+                                    <div class="col-4"><div class="data-tile"><span class="text-label">DIR</span><span class="text-info fw-bold" id="val-wind-dir">--</span></div></div>
+
+                                    <div class="col-4"><div class="data-tile"><span class="text-label">HUMIDITY</span><span class="text-value"><span id="val-humid">--</span>%</span></div></div>
+                                    <div class="col-4"><div class="data-tile"><span class="text-label">DEW PT</span><span class="text-value"><span id="val-dew">--</span>°</span></div></div>
+                                    <div class="col-4"><div class="data-tile"><span class="text-label">PRESSURE</span><span class="text-warning fw-bold"><span id="val-pressure">--</span></span></div></div>
+
+                                    <div class="col-4"><div class="data-tile"><span class="text-label">VISIBILITY</span><span class="text-value"><span id="val-vis">--</span> mi</span></div></div>
+                                    <div class="col-4"><div class="data-tile"><span class="text-label">CLOUDS</span><span class="text-value"><span id="val-clouds">--</span>%</span></div></div>
+                                    <div class="col-4"><div class="data-tile"><span class="text-label">UV</span><span class="text-value">--</span></div></div>
+
+                                    <div class="col-6"><div class="data-tile"><span class="text-label">SUNRISE</span><span class="text-value" id="val-sunrise">--:--</span></div></div>
+                                    <div class="col-6"><div class="data-tile"><span class="text-label">SUNSET</span><span class="text-value" id="val-sunset">--:--</span></div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-lg-6">
+                        <div class="card bg-glass h-100">
+                            <div class="card-header border-0 bg-transparent py-2">
+                                <small class="text-warning text-label"><i class="fas fa-radar me-2"></i> Live Doppler Radar</small>
+                            </div>
+                            <div class="card-body p-0">
+                                <iframe id="weather-radar" class="w-100 rounded-bottom" style="height: 350px; border: none;" src=""></iframe>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <div class="card bg-glass h-100">
+                            <div class="card-header border-0 bg-transparent py-2">
+                                <small class="text-info text-label"><i class="fas fa-video me-2"></i> Live Sector Feed</small>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="ratio ratio-16x9">
+                                    <iframe id="weather-video" src="" title="Live Feed" allowfullscreen></iframe>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <footer class="text-center text-secondary py-4 mt-5 border-top border-secondary" style="border-color: rgba(255,255,255,0.1) !important;">
+                <small>&copy; 2026 Mathis Global Industries. All Systems Nominal.</small><br>
+                <small style="font-size: 0.7rem;">Powered by Cloudflare, Gemini, and B-Vitamins.</small>
+            </footer>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/weather.js"></script>
+</body>
+</html>

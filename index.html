@@ -3,22 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mathis Global Industries</title>
-    <meta name="description" content="Mathis Global Industries (M.G.I.) is the premier provider of household logistics, lawn agronomy, and custom automation solutions in North Texas.">
-    <meta name="keywords" content="Mathis Global Industries, Mowing Best, Drew Mathis, Tatumn Mathis, RevOps, Google Apps Script, McKinney, Lawn Care Automation, Home Lab, AI Dashboard">
+    <title>Mathis Global Industries | Command Center</title>
+    <meta name="description" content="Mathis Global Industries (M.G.I.) - HQ and Operations Center.">
     <meta name="author" content="Drew Mathis">
     <meta name="robots" content="index, follow">
 
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://drewandtatumn.github.io/">
-    <meta property="og:title" content="Mathis Global Industries | Operational Efficiency Solved">
+    <meta property="og:title" content="Mathis Global Industries | HQ">
     <meta property="og:description" content="Authorized Personnel Only. Access the Oracle, Weather Command, and Operations HQ.">
-    <meta property="og:image" content="https://drewandtatumn.github.io/images/logo.png">
-
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="M.G.I. Command Center">
-    <meta name="twitter:description" content="Over-engineering simple household problems since 2024.">
-    <meta name="twitter:image" content="https://drewandtatumn.github.io/images/logo.png">
     
     <link rel="icon" type="image/png" href="images/mgi-favicon-256px.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -49,16 +42,16 @@
                 <small class="text-white" style="font-size: 0.6rem; opacity: 0.8;">EST. 2024</small>
             </div>
             <div class="list-group list-group-flush">
-                <a href="#home" class="list-group-item active-link" onclick="showSection('home')">
+                <a href="index.html" class="list-group-item active-link">
                     <i class="fas fa-home me-3"></i> HQ
                 </a>
-                <a href="#ai" class="list-group-item" onclick="showSection('ai')">
+                <a href="ai.html" class="list-group-item">
                     <i class="fas fa-brain me-3"></i> The Oracle (AI)
                 </a>
-                <a href="#weather" class="list-group-item" onclick="showSection('weather')">
+                <a href="weather.html" class="list-group-item">
                     <i class="fas fa-cloud-sun-rain me-3"></i> SkyNet (Weather)
                 </a>
-                <a href="#projects" class="list-group-item" onclick="showSection('projects')">
+                <a href="projects.html" class="list-group-item">
                     <i class="fas fa-code-branch me-3"></i> Projects
                 </a>
             </div>
@@ -132,149 +125,6 @@
                     </div>
                 </div>
             </div>
-
-            <div class="container-fluid content-section d-none" id="section-ai">
-                <div class="row">
-                    <div class="col-md-8 offset-md-2">
-                        <h2 class="text-white mb-4">The Oracle</h2>
-                        <div class="card bg-glass chat-card">
-                            <div class="card-body d-flex flex-column">
-                                <div id="chat-history" class="flex-grow-1 overflow-auto mb-3 p-2">
-                                    <div class="ai-message mb-2">
-                                        <span class="badge bg-info text-dark mb-1">Oracle</span><br>
-                                        Systems online. How can I assist?
-                                    </div>
-                                </div>
-                                <div class="input-group">
-                                    <input type="text" id="user-input" class="form-control bg-transparent text-white border-secondary" placeholder="Ask the Oracle..." onkeypress="handleEnter(event)">
-                                    <button class="btn btn-info" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="container-fluid content-section d-none" id="section-weather">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2 class="text-white m-0">Atmospheric Conditions</h2>
-                    
-                    <div class="btn-group">
-                        <button class="btn btn-sm btn-outline-info active" id="btn-dfw" onclick="updateSector('dfw')">DFW</button>
-                        <button class="btn btn-sm btn-outline-secondary" id="btn-slc" onclick="updateSector('slc')">SLC</button>
-                    </div>
-                </div>
-                
-                <div class="row mb-4 fade-in" id="forecast-row">
-                    <div class="col-12 text-center text-label"><i class="fas fa-circle-notch fa-spin"></i> Loading 5-Day Outlook...</div>
-                </div>
-
-                <div class="row g-4 mb-4">
-                    <div class="col-lg-7">
-                        <div class="card bg-glass h-100 border-info">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h5 class="card-title text-info m-0"><i class="fas fa-brain me-2"></i> Operational Briefing</h5>
-                                    <button class="btn btn-sm btn-link text-info p-0" onclick="fetchDashboardData(currentSector)"><i class="fas fa-sync-alt"></i></button>
-                                </div>
-                                <p class="card-text text-white" id="weather-ai-analysis" style="font-size: 1.2rem; line-height: 1.5; font-family: 'Rajdhani', monospace;">
-                                    <i class="fas fa-circle-notch fa-spin"></i> Establishing Uplink...
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-5">
-                        <div class="card bg-glass h-100">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <div class="text-start">
-                                        <div class="display-4 fw-bold text-white me-3" id="val-temp">--°</div>
-                                        <span class="text-info fw-bold small" id="sector-label">SECTOR: DFW</span>
-                                    </div>
-                                    <div class="text-end">
-                                        <div class="small fw-bold text-white" id="val-condition">SCANNING...</div>
-                                        <div class="text-label small">FEELS LIKE <span id="val-feels">--°</span></div>
-                                    </div>
-                                </div>
-                                
-                                <hr class="border-secondary opacity-25">
-
-                                <div class="row g-2 text-center">
-                                    <div class="col-4"><div class="data-tile"><span class="text-label">WIND</span><span class="text-value" id="val-wind">--</span></div></div>
-                                    <div class="col-4"><div class="data-tile"><span class="text-label">GUSTS</span><span class="text-value" id="val-gust">--</span></div></div>
-                                    <div class="col-4"><div class="data-tile"><span class="text-label">DIR</span><span class="text-info fw-bold" id="val-wind-dir">--</span></div></div>
-
-                                    <div class="col-4"><div class="data-tile"><span class="text-label">HUMIDITY</span><span class="text-value"><span id="val-humid">--</span>%</span></div></div>
-                                    <div class="col-4"><div class="data-tile"><span class="text-label">DEW PT</span><span class="text-value"><span id="val-dew">--</span>°</span></div></div>
-                                    <div class="col-4"><div class="data-tile"><span class="text-label">PRESSURE</span><span class="text-warning fw-bold"><span id="val-pressure">--</span></span></div></div>
-
-                                    <div class="col-4"><div class="data-tile"><span class="text-label">VISIBILITY</span><span class="text-value"><span id="val-vis">--</span> mi</span></div></div>
-                                    <div class="col-4"><div class="data-tile"><span class="text-label">CLOUDS</span><span class="text-value"><span id="val-clouds">--</span>%</span></div></div>
-                                    <div class="col-4"><div class="data-tile"><span class="text-label">UV</span><span class="text-value">--</span></div></div>
-
-                                    <div class="col-6"><div class="data-tile"><span class="text-label">SUNRISE</span><span class="text-value" id="val-sunrise">--:--</span></div></div>
-                                    <div class="col-6"><div class="data-tile"><span class="text-label">SUNSET</span><span class="text-value" id="val-sunset">--:--</span></div></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row g-4">
-                    <div class="col-lg-6">
-                        <div class="card bg-glass h-100">
-                            <div class="card-header border-0 bg-transparent py-2">
-                                <small class="text-warning text-label"><i class="fas fa-radar me-2"></i> Live Doppler Radar</small>
-                            </div>
-                            <div class="card-body p-0">
-                                <iframe id="weather-radar" class="w-100 rounded-bottom" style="height: 350px; border: none;" src=""></iframe>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-6">
-                        <div class="card bg-glass h-100">
-                            <div class="card-header border-0 bg-transparent py-2">
-                                <small class="text-info text-label"><i class="fas fa-video me-2"></i> Live Sector Feed</small>
-                            </div>
-                            <div class="card-body p-0">
-                                <div class="ratio ratio-16x9">
-                                    <iframe id="weather-video" src="" title="Live Feed" allowfullscreen></iframe>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="container-fluid content-section d-none" id="section-projects">
-                <h2 class="text-white mb-4">Active Operations</h2>
-                <div class="row g-4">
-                    <div class="col-md-6">
-                        <div class="card bg-glass h-100">
-                            <div class="card-body">
-                                <h5><i class="fas fa-receipt text-success me-2"></i> Receipt Assassin</h5>
-                                <p class="text-secondary small mt-2">
-                                    Automated AI-driven expense tracking.
-                                </p>
-                                <span class="badge border border-success text-success">Operational</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card bg-glass h-100">
-                            <div class="card-body">
-                                <h5><i class="fas fa-leaf text-success me-2"></i> Mowing Best Ops</h5>
-                                <p class="text-secondary small mt-2">
-                                    CRM and Agronomy cheat sheets.
-                                </p>
-                                <span class="badge border border-warning text-warning">In Development</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
             
             <footer class="text-center text-secondary py-4 mt-5 border-top border-secondary" style="border-color: rgba(255,255,255,0.1) !important;">
                 <small>&copy; 2026 Mathis Global Industries. All Systems Nominal.</small><br>
@@ -283,6 +133,6 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="js/script.js"></script>
+    <script src="js/common.js"></script>
 </body>
 </html>
