@@ -239,17 +239,19 @@ h1, h2, h3, h4, h5, .sidebar-heading, .navbar-brand {
 
 /* --- MEDIA PORTFOLIO STYLES --- */
 
+/* --- MEDIA PORTFOLIO STYLES --- */
+
 /* The "Netflix" Horizontal Scroll */
 .video-carousel {
     display: flex;
     overflow-x: auto;
     padding-bottom: 20px;
     gap: 15px;
-    scrollbar-width: thin; /* Firefox */
+    scrollbar-width: thin; 
     scrollbar-color: #0dcaf0 #212529;
 }
 
-/* Custom Scrollbar for Chrome/Safari */
+/* Custom Scrollbar */
 .video-carousel::-webkit-scrollbar {
     height: 8px;
 }
@@ -269,7 +271,7 @@ h1, h2, h3, h4, h5, .sidebar-heading, .navbar-brand {
     border-radius: 8px;
     overflow: hidden;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    flex: 0 0 auto; /* Prevents shrinking in carousel */
+    /* Removed h-100 to stop the stretching/smashing issue */
 }
 
 .video-card:hover {
@@ -278,17 +280,25 @@ h1, h2, h3, h4, h5, .sidebar-heading, .navbar-brand {
     border-color: #0dcaf0;
 }
 
-/* Sizing for Carousel Items (Vertical Shorts) */
+/* FIX: Force video to snap to top */
+.video-card .ratio iframe {
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}
+
+/* Sizing for Carousel Items (Vertical Shorts) - Reduced Size */
 .carousel-item-short {
-    width: 250px; /* Fixed width for phone-like videos */
+    width: 200px; /* Was 250px, now smaller */
+    flex-shrink: 0;
 }
 
 /* Aspect Ratios */
 .ratio-9x16 {
-    --bs-aspect-ratio: 177.78%; /* Vertical Phone Screen */
+    --bs-aspect-ratio: 177.78%; 
 }
 
-/* Hide Deleted Videos */
 .video-hidden {
     display: none !important;
 }

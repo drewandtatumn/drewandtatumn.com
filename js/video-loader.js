@@ -111,8 +111,11 @@ function renderVideo(vid, container, isGrid) {
     
     // Determining CSS Classes based on container type
     if (isGrid) {
-        // Grid Item (Director's Cut, WX, Long Form)
-        colDiv.className = vid.type === 'short' ? 'col-6 col-md-3 col-lg-2' : 'col-12 col-md-6 col-lg-4';
+        // Grid Item: Made smaller!
+        // Long form: col-lg-3 (4 per row) instead of col-lg-4 (3 per row)
+        // Shorts: col-lg-2 (6 per row)
+        const sizeClass = vid.type === 'short' ? 'col-6 col-md-3 col-lg-2' : 'col-12 col-md-6 col-lg-3';
+        colDiv.className = sizeClass;
     } else {
         // Carousel Item
         colDiv.className = 'carousel-item-short';
@@ -122,7 +125,7 @@ function renderVideo(vid, container, isGrid) {
     const ratioClass = vid.type === 'short' ? 'ratio-9x16' : 'ratio-16x9';
 
     colDiv.innerHTML = `
-        <div class="video-card h-100">
+        <div class="video-card">
             <div class="ratio ${ratioClass} bg-black">
                 <iframe src="https://www.youtube.com/embed/${vid.id}?modestbranding=1&rel=0" 
                         title="${vid.title}" 
@@ -132,10 +135,13 @@ function renderVideo(vid, container, isGrid) {
                 </iframe>
             </div>
             <div class="p-2 text-center bg-dark">
-                <small class="text-white fw-bold" style="font-size: 0.75rem;">${vid.title}</small>
+                <small class="text-white fw-bold text-truncate d-block" style="font-size: 0.7rem;">${vid.title}</small>
             </div>
         </div>
     `;
+
+    container.appendChild(colDiv);
+}
 
     container.appendChild(colDiv);
 }
