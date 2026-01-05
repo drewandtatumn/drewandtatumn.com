@@ -50,20 +50,20 @@ const RAW_VIDEOS = [
     "https://www.youtube.com/shorts/yGoA8_WVi9A | Nonretracting Heads | chorbie | true",
 
     // --- CHORBIE LONG FORM ---
-    "https://www.youtube.com/watch?v=hikwcAI8818 | Change Edger Blade | chorbie | false",
+    // User Manual Overrides applied here:
+    "https://www.youtube.com/shorts/hikwcAI8818 | Change Edger Blade | chorbie | false",
     "https://www.youtube.com/watch?v=dJF6gVAbqJ8 | Biweekly Cuts | chorbie | true",
     "https://www.youtube.com/watch?v=3d-444_-pWk | Andres is #1 | chorbie | true",
     "https://www.youtube.com/watch?v=7VqVLQ-dBOg | Time to Start | chorbie | true",
     "https://www.youtube.com/watch?v=0JxcT5HXsBg | Winter Mowing Jose | chorbie | true",
-    "https://www.youtube.com/watch?v=nk8TyN2OJqE | Truck Bed Tour | chorbie | false",
-    // NOTE: Switched this to a /shorts/ link so it renders vertically!
+    "https://www.youtube.com/shorts/nk8TyN2OJqE | Truck Bed Tour | chorbie | false",
     "https://www.youtube.com/shorts/f3nHaGhCrx0 | I was Struggling | chorbie | true", 
-    "https://www.youtube.com/watch?v=P49-AlOgnuM | Spooky Elf | chorbie | true",
-    "https://www.youtube.com/watch?v=5N3lbFOUR_E | Gate Picture | chorbie | true",
-    "https://www.youtube.com/watch?v=_DggFHLjmJg | Anole Facts | chorbie | false",
+    "https://www.youtube.com/shorts/P49-AlOgnuM | Spooky Elf | chorbie | true",
+    "https://www.youtube.com/shorts/5N3lbFOUR_E | Gate Picture | chorbie | true",
+    "https://www.youtube.com/shorts/_DggFHLjmJg | Anole Facts | chorbie | false",
     "https://www.youtube.com/watch?v=woSENBKuzsA | Check Quality | chorbie | false",
-    "https://www.youtube.com/watch?v=XiZ3Rogg2w4 | Weedeating Montage | chorbie | true",
-    "https://www.youtube.com/watch?v=XxQO7134Wo4 | Bucees | chorbie | true",
+    "https://www.youtube.com/shorts/XiZ3Rogg2w4 | Weedeating Montage | chorbie | true",
+    "https://www.youtube.com/shorts/XxQO7134Wo4 | Bucees | chorbie | true",
 
     // --- WEED XTINGUISHERS (All Edits / Long) ---
     "https://www.youtube.com/watch?v=jjf72Vc0YYg | Butterfly House | wx | true",
@@ -85,24 +85,34 @@ function initGallery() {
     // 1. Process Raw Data
     const videoData = parseRawVideos(RAW_VIDEOS);
 
-    const directorsContainer = document.getElementById('container-directors-cut');
+    // 2. Get Containers
+    const dirLongContainer = document.getElementById('container-directors-long');
+    const dirShortsContainer = document.getElementById('container-directors-shorts');
+    
     const mowingContainer = document.getElementById('carousel-mowingbest');
     const chorbieLongContainer = document.getElementById('container-chorbie-long');
     const chorbieShortsContainer = document.getElementById('carousel-chorbie-shorts');
     const wxContainer = document.getElementById('container-wx');
 
+    // 3. Sort and Render
     videoData.forEach(vid => {
-        // Logic: Director's Cut (Edits)
+        // --- DIRECTOR'S CUT LOGIC ---
         if (vid.edit) {
-            renderVideo(vid, directorsContainer, true);
+            if (vid.type === "short") {
+                // If edit is a short, go to the Carousel Shelf
+                renderVideo(vid, dirShortsContainer, false); 
+            } else {
+                // If edit is long, go to the Main Grid
+                renderVideo(vid, dirLongContainer, true);
+            }
         }
 
-        // Logic: Company Buckets
+        // --- COMPANY LOGIC ---
         if (vid.company === "wx") {
             renderVideo(vid, wxContainer, true);
         }
         else if (vid.company === "mb" && !vid.edit) {
-            renderVideo(vid, mowingContainer, false); // false = carousel
+            renderVideo(vid, mowingContainer, false); 
         }
         else if (vid.company === "chorbie" && !vid.edit) {
             if (vid.type === "short") {
@@ -122,9 +132,8 @@ function parseRawVideos(rawList) {
         const company = parts[2];
         const isEdit = parts[3] === "true";
 
-        // Auto-Detect ID and Type
         let id = "";
-        let type = "long"; // Default to cinema
+        let type = "long"; 
 
         // Extract ID
         const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
@@ -132,7 +141,7 @@ function parseRawVideos(rawList) {
         
         if (url.includes("/shorts/")) {
             type = "short";
-            id = url.split("/shorts/")[1].split("?")[0]; // Clean ID
+            id = url.split("/shorts/")[1].split("?")[0];
         } else if (match && match[2].length === 11) {
             id = match[2];
             type = "long";
@@ -148,10 +157,10 @@ function renderVideo(vid, container, isGrid) {
     const colDiv = document.createElement('div');
     
     if (isGrid) {
-        // Thumbnail Sizing: col-lg-3 for long (4/row), col-lg-2 for shorts (6/row)
-        const sizeClass = vid.type === 'short' ? 'col-6 col-md-3 col-lg-2' : 'col-12 col-md-6 col-lg-3';
-        colDiv.className = sizeClass;
+        // Grid: 4 per row (col-lg-3)
+        colDiv.className = 'col-12 col-md-6 col-lg-3';
     } else {
+        // Carousel Item
         colDiv.className = 'carousel-item-short';
     }
 
