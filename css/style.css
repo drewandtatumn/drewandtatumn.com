@@ -280,12 +280,21 @@ h1, h2, h3, h4, h5, .sidebar-heading, .navbar-brand {
     border-color: #0dcaf0;
 }
 
-/* FIX: Force video to snap to top */
+/* FIX: Force video to snap to top and fill container */
+.video-card .ratio {
+    position: relative;          /* Anchors the video inside the box */
+    width: 100%;
+    background-color: #000;      /* Hides glitches behind the video */
+}
+
 .video-card .ratio iframe {
+    position: absolute;          /* CRITICAL: Takes video out of flow to snap to edges */
     top: 0;
     left: 0;
-    height: 100%;
     width: 100%;
+    height: 100%;
+    border: none;
+    object-fit: cover;           /* Helps with sizing consistency */
 }
 
 /* Sizing for Carousel Items (Vertical Shorts) - Reduced Size */
