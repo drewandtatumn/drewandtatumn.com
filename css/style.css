@@ -311,3 +311,12 @@ h1, h2, h3, h4, h5, .sidebar-heading, .navbar-brand {
 .video-hidden {
     display: none !important;
 }
+
+/* --- OPTION A: THE DARK SHELF --- */
+.video-carousel {
+    background: rgba(0, 0, 0, 0.4); /* Darker "Tray" background */
+    padding: 15px;                   /* Padding inside the tray */
+    border-radius: 12px;             /* Rounded corners for the tray */
+    border: 1px solid rgba(255, 255, 255, 0.05); /* Subtle border */
+    margin-bottom: 20px;
+}

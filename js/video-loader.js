@@ -1,101 +1,109 @@
 // js/video-loader.js
-// Handles YouTube API, Sorting, and Auto-Hiding logic
+// Handles Smart Link Parsing, Auto-Detection, and Layout
 
-const VIDEO_DB = [
-    // --- MOWING BEST (Shorts) ---
-    { id: "J2kJ4jLlEzQ", title: "Height of Grass", type: "short", company: "mb" },
-    { id: "VRAuv6CJrg0", title: "Acorns Damage", type: "short", company: "mb" },
-    { id: "_b0oLr8JfLo", title: "Insulate Shrubs", type: "short", company: "mb" },
-    { id: "B5DtVrBl2ac", title: "Winter Prep", type: "short", company: "mb" },
-    { id: "ViaRekkeW8g", title: "Winter Cut Height", type: "short", company: "mb" },
-    { id: "pM663bP6Tq4", title: "Guilty as Charged", type: "short", company: "mb" },
-    { id: "BCjeTEtKjKI", title: "Stop Mowing?", type: "short", company: "mb" },
-    { id: "JKQMtOFXsfo", title: "Here I am", type: "short", company: "mb" },
-    { id: "DV_ncaM0ZG8", title: "Being Chased", type: "short", company: "mb" },
-    { id: "TXurptOweXM", title: "Winter Lookout", type: "short", company: "mb" },
-    { id: "S_UKk1tkkbc", title: "Trust Fall", type: "short", company: "mb" },
-    { id: "q329SYcpT44", title: "How much to mow?", type: "short", company: "mb" },
-    { id: "yYPAfbejEho", title: "3 Fall Tips", type: "short", company: "mb" },
-    { id: "6kdeifgIF00", title: "Types of Mulching", type: "short", company: "mb" },
-    { id: "Lbqao5oVyrE", title: "Break it down", type: "short", company: "mb" },
-    { id: "oQ7jtIBWT0k", title: "Avoid this in Winter", type: "short", company: "mb" },
-    { id: "Ww3AVcrLFdA", title: "BAM!", type: "short", company: "mb" },
-    { id: "B9JmhE0qMMU", title: "Whats Included", type: "short", company: "mb" },
-    { id: "OEb7MsWu__Q", title: "Sharp Blades", type: "short", company: "mb" },
+// CONFIGURATION ZONE
+// Format: "YouTube Link | Title | Company (mb/chorbie/wx) | Is Edit? (true/false)"
+const RAW_VIDEOS = [
+    // --- MOWING BEST (All Shorts) ---
+    "https://www.youtube.com/shorts/J2kJ4jLlEzQ | Height of Grass | mb | false",
+    "https://www.youtube.com/shorts/VRAuv6CJrg0 | Acorns Damage | mb | false",
+    "https://www.youtube.com/shorts/_b0oLr8JfLo | Insulate Shrubs | mb | false",
+    "https://www.youtube.com/shorts/B5DtVrBl2ac | Winter Prep | mb | false",
+    "https://www.youtube.com/shorts/ViaRekkeW8g | Winter Cut Height | mb | false",
+    "https://www.youtube.com/shorts/pM663bP6Tq4 | Guilty as Charged | mb | false",
+    "https://www.youtube.com/shorts/BCjeTEtKjKI | Stop Mowing? | mb | false",
+    "https://www.youtube.com/shorts/JKQMtOFXsfo | Here I am | mb | false",
+    "https://www.youtube.com/shorts/DV_ncaM0ZG8 | Being Chased | mb | false",
+    "https://www.youtube.com/shorts/TXurptOweXM | Winter Lookout | mb | false",
+    "https://www.youtube.com/shorts/S_UKk1tkkbc | Trust Fall | mb | false",
+    "https://www.youtube.com/shorts/q329SYcpT44 | How much to mow? | mb | false",
+    "https://www.youtube.com/shorts/yYPAfbejEho | 3 Fall Tips | mb | false",
+    "https://www.youtube.com/shorts/6kdeifgIF00 | Types of Mulching | mb | false",
+    "https://www.youtube.com/shorts/Lbqao5oVyrE | Break it down | mb | false",
+    "https://www.youtube.com/shorts/oQ7jtIBWT0k | Avoid this in Winter | mb | false",
+    "https://www.youtube.com/shorts/Ww3AVcrLFdA | BAM! | mb | false",
+    "https://www.youtube.com/shorts/B9JmhE0qMMU | Whats Included | mb | false",
+    "https://www.youtube.com/shorts/OEb7MsWu__Q | Sharp Blades | mb | false",
 
-    // --- CHORBIE ---
-    { id: "-O0zNzj9AXI", title: "Weed-aholic", type: "short", company: "chorbie" },
-    { id: "sJ47yPIEjiY", title: "Fall Pre-emergent", type: "short", company: "chorbie" },
-    { id: "mNNWjPbZXrM", title: "Bundling Services", type: "short", company: "chorbie" },
-    { id: "m-AC2G7_Uck", title: "Biscuit the Cat", type: "short", company: "chorbie" },
-    { id: "amXEHz7p2tY", title: "Here I am again", type: "short", company: "chorbie" },
-    { id: "L_27cH4TQNw", title: "Weedeater Olympics", type: "short", company: "chorbie" },
-    { id: "yE8Eo8g0iNA", title: "Excalibur", type: "short", company: "chorbie" },
-    // Drew's Edits (Chorbie Shorts)
-    { id: "346KBJvyywM", title: "The Art and Artist", type: "short", company: "chorbie", edit: true },
-    { id: "YqkKm1M0Xaw", title: "Winter Mowing Serious", type: "short", company: "chorbie", edit: true },
-    { id: "LKejMNVrSeg", title: "Irrigation Zones", type: "short", company: "chorbie", edit: true },
-    { id: "0sg7mFYlR3k", title: "Grub Damage", type: "short", company: "chorbie", edit: true },
-    { id: "KE1fzCxVoe4", title: "Weedeat a Fence", type: "short", company: "chorbie", edit: true },
-    { id: "2hcPsAgf-R8", title: "Steel Blade Edger", type: "short", company: "chorbie", edit: true },
-    { id: "WB2D9IlJz2I", title: "Spooky Mowing", type: "short", company: "chorbie", edit: true },
-    { id: "qtgToukISB4", title: "6 Weeks Growth", type: "short", company: "chorbie", edit: true },
-    { id: "Ahs5c7Qh3k0", title: "Edge Trimming", type: "short", company: "chorbie", edit: true },
-    { id: "LdaAT5Nr_a4", title: "Tacoma Max", type: "short", company: "chorbie", edit: true },
-    { id: "Bbe0VKTmm3A", title: "Where I started", type: "short", company: "chorbie", edit: true },
-    { id: "c3xzHEKAHLw", title: "Slomo Scag", type: "short", company: "chorbie", edit: true },
-    { id: "yGoA8_WVi9A", title: "Nonretracting Heads", type: "short", company: "chorbie", edit: true },
-    // Drew's Edits (Chorbie Long)
-    { id: "hikwcAI8818", title: "Change Edger Blade", type: "long", company: "chorbie", edit: false }, 
-    { id: "dJF6gVAbqJ8", title: "Biweekly Cuts", type: "long", company: "chorbie", edit: true },
-    { id: "3d-444_-pWk", title: "Andres is #1", type: "long", company: "chorbie", edit: true },
-    { id: "7VqVLQ-dBOg", title: "Time to Start", type: "long", company: "chorbie", edit: true },
-    { id: "0JxcT5HXsBg", title: "Winter Mowing Jose", type: "long", company: "chorbie", edit: true },
-    { id: "nk8TyN2OJqE", title: "Truck Bed Tour", type: "long", company: "chorbie", edit: false },
-    { id: "f3nHaGhCrx0", title: "I was Struggling", type: "long", company: "chorbie", edit: true },
-    { id: "P49-AlOgnuM", title: "Spooky Elf", type: "long", company: "chorbie", edit: true },
-    { id: "5N3lbFOUR_E", title: "Gate Picture", type: "long", company: "chorbie", edit: true },
-    { id: "_DggFHLjmJg", title: "Anole Facts", type: "long", company: "chorbie", edit: false },
-    { id: "woSENBKuzsA", title: "Check Quality", type: "long", company: "chorbie", edit: false },
-    { id: "XiZ3Rogg2w4", title: "Weedeating Montage", type: "long", company: "chorbie", edit: true },
-    { id: "XxQO7134Wo4", title: "Bucees", type: "long", company: "chorbie", edit: true },
+    // --- CHORBIE SHORTS ---
+    "https://www.youtube.com/shorts/-O0zNzj9AXI | Weed-aholic | chorbie | false",
+    "https://www.youtube.com/shorts/sJ47yPIEjiY | Fall Pre-emergent | chorbie | false",
+    "https://www.youtube.com/shorts/mNNWjPbZXrM | Bundling Services | chorbie | false",
+    "https://www.youtube.com/shorts/m-AC2G7_Uck | Biscuit the Cat | chorbie | false",
+    "https://www.youtube.com/shorts/amXEHz7p2tY | Here I am again | chorbie | false",
+    "https://www.youtube.com/shorts/L_27cH4TQNw | Weedeater Olympics | chorbie | false",
+    "https://www.youtube.com/shorts/yE8Eo8g0iNA | Excalibur | chorbie | false",
 
-    // --- WEED XTINGUISHERS (All Edits) ---
-    { id: "jjf72Vc0YYg", title: "Butterfly House", type: "long", company: "wx", edit: true },
-    { id: "jPOqcv3KdNo", title: "WX News Feb 18", type: "long", company: "wx", edit: true },
-    { id: "C0oNR_ZZi5k", title: "Ins and Outs of Biweekly", type: "long", company: "wx", edit: true },
-    { id: "vBdJnmrhFB4", title: "Pest Facts", type: "long", company: "wx", edit: true },
-    { id: "vAY2TEF8zjY", title: "Merry Christmas", type: "long", company: "wx", edit: true },
+    // --- CHORBIE EDITS (Shorts) ---
+    "https://www.youtube.com/shorts/346KBJvyywM | The Art and Artist | chorbie | true",
+    "https://www.youtube.com/shorts/YqkKm1M0Xaw | Winter Mowing Serious | chorbie | true",
+    "https://www.youtube.com/shorts/LKejMNVrSeg | Irrigation Zones | chorbie | true",
+    "https://www.youtube.com/shorts/0sg7mFYlR3k | Grub Damage | chorbie | true",
+    "https://www.youtube.com/shorts/KE1fzCxVoe4 | Weedeat a Fence | chorbie | true",
+    "https://www.youtube.com/shorts/2hcPsAgf-R8 | Steel Blade Edger | chorbie | true",
+    "https://www.youtube.com/shorts/WB2D9IlJz2I | Spooky Mowing | chorbie | true",
+    "https://www.youtube.com/shorts/qtgToukISB4 | 6 Weeks Growth | chorbie | true",
+    "https://www.youtube.com/shorts/Ahs5c7Qh3k0 | Edge Trimming | chorbie | true",
+    "https://www.youtube.com/shorts/LdaAT5Nr_a4 | Tacoma Max | chorbie | true",
+    "https://www.youtube.com/shorts/Bbe0VKTmm3A | Where I started | chorbie | true",
+    "https://www.youtube.com/shorts/c3xzHEKAHLw | Slomo Scag | chorbie | true",
+    "https://www.youtube.com/shorts/yGoA8_WVi9A | Nonretracting Heads | chorbie | true",
+
+    // --- CHORBIE LONG FORM ---
+    "https://www.youtube.com/watch?v=hikwcAI8818 | Change Edger Blade | chorbie | false",
+    "https://www.youtube.com/watch?v=dJF6gVAbqJ8 | Biweekly Cuts | chorbie | true",
+    "https://www.youtube.com/watch?v=3d-444_-pWk | Andres is #1 | chorbie | true",
+    "https://www.youtube.com/watch?v=7VqVLQ-dBOg | Time to Start | chorbie | true",
+    "https://www.youtube.com/watch?v=0JxcT5HXsBg | Winter Mowing Jose | chorbie | true",
+    "https://www.youtube.com/watch?v=nk8TyN2OJqE | Truck Bed Tour | chorbie | false",
+    // NOTE: Switched this to a /shorts/ link so it renders vertically!
+    "https://www.youtube.com/shorts/f3nHaGhCrx0 | I was Struggling | chorbie | true", 
+    "https://www.youtube.com/watch?v=P49-AlOgnuM | Spooky Elf | chorbie | true",
+    "https://www.youtube.com/watch?v=5N3lbFOUR_E | Gate Picture | chorbie | true",
+    "https://www.youtube.com/watch?v=_DggFHLjmJg | Anole Facts | chorbie | false",
+    "https://www.youtube.com/watch?v=woSENBKuzsA | Check Quality | chorbie | false",
+    "https://www.youtube.com/watch?v=XiZ3Rogg2w4 | Weedeating Montage | chorbie | true",
+    "https://www.youtube.com/watch?v=XxQO7134Wo4 | Bucees | chorbie | true",
+
+    // --- WEED XTINGUISHERS (All Edits / Long) ---
+    "https://www.youtube.com/watch?v=jjf72Vc0YYg | Butterfly House | wx | true",
+    "https://www.youtube.com/watch?v=jPOqcv3KdNo | WX News Feb 18 | wx | true",
+    "https://www.youtube.com/watch?v=C0oNR_ZZi5k | Ins and Outs | wx | true",
+    "https://www.youtube.com/watch?v=vBdJnmrhFB4 | Pest Facts | wx | true",
+    "https://www.youtube.com/watch?v=vAY2TEF8zjY | Merry Christmas | wx | true"
 ];
+
+// --- LOGIC ENGINE ---
 
 document.addEventListener("DOMContentLoaded", () => {
     initGallery();
 });
 
 function initGallery() {
+    console.log("M.G.I. Smart Video Loader Initialized");
+    
+    // 1. Process Raw Data
+    const videoData = parseRawVideos(RAW_VIDEOS);
+
     const directorsContainer = document.getElementById('container-directors-cut');
     const mowingContainer = document.getElementById('carousel-mowingbest');
     const chorbieLongContainer = document.getElementById('container-chorbie-long');
     const chorbieShortsContainer = document.getElementById('carousel-chorbie-shorts');
     const wxContainer = document.getElementById('container-wx');
 
-    VIDEO_DB.forEach(vid => {
-        // LOGIC: Director's Cut
-        // If it's an EDIT, it goes to Director's Cut
+    videoData.forEach(vid => {
+        // Logic: Director's Cut (Edits)
         if (vid.edit) {
-            renderVideo(vid, directorsContainer, true); // true = allow grid format for DC
+            renderVideo(vid, directorsContainer, true);
         }
 
-        // LOGIC: Company Sorting
-        // 1. Weed Xtinguishers (Duplicates: Goes to DC AND Legacy)
+        // Logic: Company Buckets
         if (vid.company === "wx") {
             renderVideo(vid, wxContainer, true);
         }
-        // 2. Mowing Best (Moves: If Edit, ONLY DC. Else, MB Carousel)
         else if (vid.company === "mb" && !vid.edit) {
-            renderVideo(vid, mowingContainer, false); // false = carousel item
+            renderVideo(vid, mowingContainer, false); // false = carousel
         }
-        // 3. Chorbie (Moves: If Edit, ONLY DC. Else, Chorbie section)
         else if (vid.company === "chorbie" && !vid.edit) {
             if (vid.type === "short") {
                 renderVideo(vid, chorbieShortsContainer, false);
@@ -106,32 +114,56 @@ function initGallery() {
     });
 }
 
+function parseRawVideos(rawList) {
+    return rawList.map(entry => {
+        const parts = entry.split('|').map(s => s.trim());
+        const url = parts[0];
+        const title = parts[1];
+        const company = parts[2];
+        const isEdit = parts[3] === "true";
+
+        // Auto-Detect ID and Type
+        let id = "";
+        let type = "long"; // Default to cinema
+
+        // Extract ID
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+        const match = url.match(regExp);
+        
+        if (url.includes("/shorts/")) {
+            type = "short";
+            id = url.split("/shorts/")[1].split("?")[0]; // Clean ID
+        } else if (match && match[2].length === 11) {
+            id = match[2];
+            type = "long";
+        } else {
+            console.error("Invalid Video Link:", url);
+        }
+
+        return { id, title, company, edit: isEdit, type };
+    });
+}
+
 function renderVideo(vid, container, isGrid) {
     const colDiv = document.createElement('div');
     
-    // Determining CSS Classes based on container type
     if (isGrid) {
-        // Grid Item: Made smaller!
-        // Long form: col-lg-3 (4 per row) instead of col-lg-4 (3 per row)
-        // Shorts: col-lg-2 (6 per row)
+        // Thumbnail Sizing: col-lg-3 for long (4/row), col-lg-2 for shorts (6/row)
         const sizeClass = vid.type === 'short' ? 'col-6 col-md-3 col-lg-2' : 'col-12 col-md-6 col-lg-3';
         colDiv.className = sizeClass;
     } else {
-        // Carousel Item
         colDiv.className = 'carousel-item-short';
     }
 
-    // Aspect Ratio Logic
     const ratioClass = vid.type === 'short' ? 'ratio-9x16' : 'ratio-16x9';
 
     colDiv.innerHTML = `
-        <div class="video-card">
+        <div class="video-card h-100">
             <div class="ratio ${ratioClass} bg-black">
                 <iframe src="https://www.youtube.com/embed/${vid.id}?modestbranding=1&rel=0" 
                         title="${vid.title}" 
                         allowfullscreen 
-                        loading="lazy"
-                        onerror="this.closest('.video-card').style.display='none'">
+                        loading="lazy">
                 </iframe>
             </div>
             <div class="p-2 text-center bg-dark">
