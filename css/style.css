@@ -129,6 +129,20 @@ h1, h2, h3, h4, h5, .sidebar-heading, .navbar-brand {
     min-height: 0;        /* CRITICAL: Flexbox bug fix for browsers */
 }
 
+/* --- Layer 7: Input Bar High Contrast Override --- */
+#user-input {
+    background: rgba(0, 0, 0, 0.6) !important; /* Dark background to pop against the glass */
+    color: #ffffff !important;                 /* Pure White Text for typing */
+    border: 1px solid #0dcaf0 !important;      /* Cyan Border to match the theme */
+    box-shadow: 0 0 10px rgba(13, 202, 240, 0.1); /* Slight glow */
+}
+
+/* This fixes the "Invisible Grey" placeholder text */
+#user-input::placeholder {
+    color: #d0d0d0 !important;                 /* Bright Silver */
+    opacity: 1;
+}
+
 #chat-history {
     flex: 1;              /* Take up all space except the input bar */
     overflow-y: auto;     /* Scroll vertically */
