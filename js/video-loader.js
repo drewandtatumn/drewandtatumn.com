@@ -63,7 +63,7 @@ const VIDEO_DB = [
     // --- WEED XTINGUISHERS (All Edits) ---
     { id: "jjf72Vc0YYg", title: "Butterfly House", type: "long", company: "wx", edit: true },
     { id: "jPOqcv3KdNo", title: "WX News Feb 18", type: "long", company: "wx", edit: true },
-    { id: "C0oNR_ZZi5k", title: "Ins and Outs", type: "long", company: "wx", edit: true },
+    { id: "C0oNR_ZZi5k", title: "Ins and Outs of Biweekly", type: "long", company: "wx", edit: true },
     { id: "vBdJnmrhFB4", title: "Pest Facts", type: "long", company: "wx", edit: true },
     { id: "vAY2TEF8zjY", title: "Merry Christmas", type: "long", company: "wx", edit: true },
 ];
@@ -139,9 +139,6 @@ function renderVideo(vid, container, isGrid) {
             </div>
         </div>
     `;
-
-    container.appendChild(colDiv);
-}
 
     container.appendChild(colDiv);
 }
