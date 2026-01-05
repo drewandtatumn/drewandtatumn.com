@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mathis Global Industries | Media Portfolio</title>
+    <link rel="icon" type="image/png" href="images/mgi-favicon-256px.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <canvas id="canvas-network"></canvas>
+
+    <div class="d-flex" id="wrapper">
+        <div id="sidebar-wrapper">
+            <div class="sidebar-heading">
+                <i class="fas fa-atom fa-2x mb-2 text-info"></i><br>
+                M.G.I.<br>
+                <small class="text-white" style="font-size: 0.6rem; opacity: 0.8;">EST. 2024</small>
+            </div>
+            <div class="list-group list-group-flush">
+                <a href="index.html" class="list-group-item"><i class="fas fa-home me-3"></i> HQ</a>
+                <a href="ai.html" class="list-group-item"><i class="fas fa-brain me-3"></i> The Oracle (AI)</a>
+                <a href="weather.html" class="list-group-item"><i class="fas fa-cloud-sun-rain me-3"></i> SkyNet (Weather)</a>
+                <a href="media-portfolio.html" class="list-group-item active-link"><i class="fas fa-film me-3"></i> Portfolio</a>
+                <a href="projects.html" class="list-group-item"><i class="fas fa-code-branch me-3"></i> Projects</a>
+            </div>
+        </div>
+
+        <div id="page-content-wrapper">
+            <nav class="navbar navbar-dark bg-transparent py-3 px-4">
+                <button class="btn btn-outline-light d-md-none" id="menu-toggle"><i class="fas fa-bars"></i></button>
+            </nav>
+
+            <div class="container-fluid content-section">
+                
+                <div class="text-center mb-5">
+                    <h1 class="display-4 fw-bold text-white" style="font-family: 'Orbitron', sans-serif;">MEDIA ARCHIVES</h1>
+                    <p class="lead text-info" style="font-family: 'Rajdhani', sans-serif;">PRODUCTIONS // EDITS // SHORTS</p>
+                </div>
+
+                <div class="section-container mb-5">
+                    <h3 class="text-white border-bottom border-secondary pb-2 mb-4">
+                        <i class="fas fa-cut text-danger me-2"></i> Director's Cut <small class="text-muted fs-6 ms-2">(Featured Edits)</small>
+                    </h3>
+                    <div class="row g-4" id="container-directors-cut">
+                        </div>
+                </div>
+
+                <div class="section-container mb-5">
+                    <h3 class="text-white border-bottom border-secondary pb-2 mb-4">
+                        <i class="fas fa-leaf text-success me-2"></i> Mowing Best <small class="text-muted fs-6 ms-2">(Shorts Collection)</small>
+                    </h3>
+                    <div class="video-carousel" id="carousel-mowingbest">
+                        </div>
+                </div>
+
+                <div class="section-container mb-5">
+                    <h3 class="text-white border-bottom border-secondary pb-2 mb-4">
+                        <i class="fas fa-tree text-warning me-2"></i> Chorbie <small class="text-muted fs-6 ms-2">(Landscape & Operations)</small>
+                    </h3>
+                    
+                    <div class="row g-4 mb-4" id="container-chorbie-long"></div>
+                    
+                    <h5 class="text-secondary mt-4 mb-3 ps-2 border-start border-3 border-info">Quick Clips & Skits</h5>
+                    <div class="video-carousel" id="carousel-chorbie-shorts"></div>
+                </div>
+
+                <div class="section-container mb-5">
+                    <h3 class="text-white border-bottom border-secondary pb-2 mb-4">
+                        <i class="fas fa-bug text-danger me-2"></i> Weed Xtinguishers <small class="text-muted fs-6 ms-2">(Legacy Archives)</small>
+                    </h3>
+                    <div class="row g-4" id="container-wx">
+                        </div>
+                </div>
+
+            </div>
+            
+            <footer class="text-center text-secondary py-4 mt-5">
+                <small>&copy; 2026 Mathis Global Industries.</small>
+            </footer>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/video-loader.js"></script>
+</body>
+</html>

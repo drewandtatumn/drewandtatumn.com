@@ -236,3 +236,59 @@ h1, h2, h3, h4, h5, .sidebar-heading, .navbar-brand {
     border-color: #0dcaf0 transparent transparent transparent;
     z-index: 1000;
 }
+
+/* --- MEDIA PORTFOLIO STYLES --- */
+
+/* The "Netflix" Horizontal Scroll */
+.video-carousel {
+    display: flex;
+    overflow-x: auto;
+    padding-bottom: 20px;
+    gap: 15px;
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: #0dcaf0 #212529;
+}
+
+/* Custom Scrollbar for Chrome/Safari */
+.video-carousel::-webkit-scrollbar {
+    height: 8px;
+}
+.video-carousel::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.05);
+    border-radius: 4px;
+}
+.video-carousel::-webkit-scrollbar-thumb {
+    background-color: #0dcaf0;
+    border-radius: 4px;
+}
+
+/* Video Cards */
+.video-card {
+    background: rgba(25, 30, 35, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    flex: 0 0 auto; /* Prevents shrinking in carousel */
+}
+
+.video-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(13, 202, 240, 0.2);
+    border-color: #0dcaf0;
+}
+
+/* Sizing for Carousel Items (Vertical Shorts) */
+.carousel-item-short {
+    width: 250px; /* Fixed width for phone-like videos */
+}
+
+/* Aspect Ratios */
+.ratio-9x16 {
+    --bs-aspect-ratio: 177.78%; /* Vertical Phone Screen */
+}
+
+/* Hide Deleted Videos */
+.video-hidden {
+    display: none !important;
+}
