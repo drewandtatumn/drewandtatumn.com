@@ -14,6 +14,16 @@ h1, h2, h3, h4, h5, .sidebar-heading, .navbar-brand {
     letter-spacing: 1px;
 }
 
+/* --- VISIBILITY & CONTRAST OVERRIDES --- */
+/* Fixes "illegible grey" issues on dark backgrounds */
+.text-muted {
+    color: #b0b0b0 !important; /* Lighter Silver for sub-headers */
+}
+
+.text-secondary {
+    color: #adb5bd !important; /* Lighter Grey for footers/notes */
+}
+
 /* --- Background Canvas --- */
 #canvas-network {
     position: fixed;
@@ -101,19 +111,30 @@ h1, h2, h3, h4, h5, .sidebar-heading, .navbar-brand {
     transform: translateY(-2px);
 }
 
-/* --- Chat Interface Fixed --- */
+/* --- Chat Interface Fixed (LOCKED LAYOUT) --- */
 .chat-card {
-    /* Calculate height to fill space between nav and footer */
-    height: calc(100vh - 200px); 
+    /* Hard lock the height so it never grows beyond the viewport */
+    height: calc(100vh - 180px); 
     display: flex;
     flex-direction: column;
+    overflow: hidden; /* CRITICAL: Stops the card itself from growing */
+}
+
+/* New Rule for the Inner Body to handle scrolling */
+.chat-card .card-body {
+    flex: 1;              /* Fill available space */
+    display: flex;        /* Enable Flexbox layout */
+    flex-direction: column;
+    overflow: hidden;     /* CRITICAL: Forces children to scroll if too big */
+    min-height: 0;        /* CRITICAL: Flexbox bug fix for browsers */
 }
 
 #chat-history {
-    flex: 1;
-    overflow-y: auto;
-    padding: 15px;
-    /* Internal Scrollbar */
+    flex: 1;              /* Take up all space except the input bar */
+    overflow-y: auto;     /* Scroll vertically */
+    padding: 10px;
+    margin-bottom: 15px;
+    /* Custom Scrollbar Styles */
     scrollbar-width: thin;
     scrollbar-color: #0dcaf0 #1a1a2e;
 }
@@ -192,9 +213,6 @@ h1, h2, h3, h4, h5, .sidebar-heading, .navbar-brand {
 .btn-login-glow:hover { background: #0dcaf0; color: #000; box-shadow: 0 0 20px rgba(13, 202, 240, 0.6); }
 
 /* --- CUSTOM M.G.I. TOOLTIPS --- */
-/* Note: Standard 'title' attributes rely on browser rendering. 
-   To fully customize, we use the attribute selector logic */
-
 [title] {
     position: relative;
     cursor: help;
@@ -224,7 +242,6 @@ h1, h2, h3, h4, h5, .sidebar-heading, .navbar-brand {
     animation: fadeIn 0.3s ease-out;
 }
 
-/* Little arrow pointing down */
 [title]:hover::before {
     content: '';
     position: absolute;
@@ -237,11 +254,9 @@ h1, h2, h3, h4, h5, .sidebar-heading, .navbar-brand {
     z-index: 1000;
 }
 
-/* --- MEDIA PORTFOLIO STYLES --- */
+/* --- MEDIA PORTFOLIO STYLES (FINALIZED) --- */
 
-/* --- MEDIA PORTFOLIO STYLES --- */
-
-/* The "Netflix" Horizontal Scroll */
+/* The "Dark Shelf" for Shorts */
 .video-carousel {
     display: flex;
     overflow-x: auto;
@@ -249,9 +264,16 @@ h1, h2, h3, h4, h5, .sidebar-heading, .navbar-brand {
     gap: 15px;
     scrollbar-width: thin; 
     scrollbar-color: #0dcaf0 #212529;
+    
+    /* Option A: Dark Shelf Styling */
+    background: rgba(0, 0, 0, 0.4); 
+    padding: 15px;                   
+    border-radius: 12px;             
+    border: 1px solid rgba(255, 255, 255, 0.05); 
+    margin-bottom: 20px;
 }
 
-/* Custom Scrollbar */
+/* Custom Scrollbar for Carousel */
 .video-carousel::-webkit-scrollbar {
     height: 8px;
 }
@@ -271,7 +293,6 @@ h1, h2, h3, h4, h5, .sidebar-heading, .navbar-brand {
     border-radius: 8px;
     overflow: hidden;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    /* Removed h-100 to stop the stretching/smashing issue */
 }
 
 .video-card:hover {
@@ -280,43 +301,35 @@ h1, h2, h3, h4, h5, .sidebar-heading, .navbar-brand {
     border-color: #0dcaf0;
 }
 
-/* FIX: Force video to snap to top and fill container */
+/* FIX: Force absolute positioning to stop videos from smashing/disappearing */
 .video-card .ratio {
-    position: relative;          /* Anchors the video inside the box */
+    position: relative;
     width: 100%;
-    background-color: #000;      /* Hides glitches behind the video */
+    background-color: #000;
 }
 
+/* We use !important to override any browser default behavior */
 .video-card .ratio iframe {
-    position: absolute;          /* CRITICAL: Takes video out of flow to snap to edges */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: none;
-    object-fit: cover;           /* Helps with sizing consistency */
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    border: none !important;
+    object-fit: cover !important;
 }
 
-/* Sizing for Carousel Items (Vertical Shorts) - Reduced Size */
+/* Sizing for Carousel Items (Vertical Shorts) */
 .carousel-item-short {
-    width: 200px; /* Was 250px, now smaller */
+    width: 200px;
     flex-shrink: 0;
 }
 
-/* Aspect Ratios */
+/* Custom Aspect Ratio for Shorts */
 .ratio-9x16 {
     --bs-aspect-ratio: 177.78%; 
 }
 
 .video-hidden {
     display: none !important;
-}
-
-/* --- OPTION A: THE DARK SHELF --- */
-.video-carousel {
-    background: rgba(0, 0, 0, 0.4); /* Darker "Tray" background */
-    padding: 15px;                   /* Padding inside the tray */
-    border-radius: 12px;             /* Rounded corners for the tray */
-    border: 1px solid rgba(255, 255, 255, 0.05); /* Subtle border */
-    margin-bottom: 20px;
 }
