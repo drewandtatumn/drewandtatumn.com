@@ -139,11 +139,13 @@ function setupCarouselUX() {
         wrapper.appendChild(btnRight);
 
         // C. Smart Loop Logic (The Netflix Feel)
+        // FIX: Re-calculated Left Logic to find the EXACT end pixel
         btnLeft.onclick = () => {
             const tolerance = 10;
-            // If at Start -> Rewind to End
+            // If at Start (0) -> Jump to End (Max Scroll)
             if (carousel.scrollLeft <= tolerance) {
-                carousel.scrollTo({ left: carousel.scrollWidth, behavior: 'smooth' });
+                const maxScroll = carousel.scrollWidth - carousel.clientWidth; // <--- MATH FIX
+                carousel.scrollTo({ left: maxScroll, behavior: 'smooth' });
             } else {
                 carousel.scrollBy({ left: -300, behavior: 'smooth' });
             }
@@ -152,7 +154,7 @@ function setupCarouselUX() {
         btnRight.onclick = () => {
             const tolerance = 10;
             const maxScroll = carousel.scrollWidth - carousel.clientWidth;
-            // If at End -> Fast Forward to Start
+            // If at End -> Jump to Start (0)
             if (carousel.scrollLeft >= maxScroll - tolerance) {
                 carousel.scrollTo({ left: 0, behavior: 'smooth' });
             } else {
@@ -161,7 +163,7 @@ function setupCarouselUX() {
         };
 
         // E. THE MOUSE WHEEL HACK (Vertical -> Horizontal)
-        // Added { passive: false } to force the browser to respect our "Stop Scrolling Down" command
+        // Added preventDefault to "deltaY" checks to stop double-scrolling
         carousel.addEventListener('wheel', (evt) => {
             const isAtEnd = carousel.scrollLeft + carousel.clientWidth >= carousel.scrollWidth - 10;
             const isAtStart = carousel.scrollLeft <= 0;
@@ -169,11 +171,13 @@ function setupCarouselUX() {
             // If Scrolling DOWN (Positive Y) and NOT at the end -> Go Right
             if (evt.deltaY > 0 && !isAtEnd) {
                 evt.preventDefault();
+                evt.stopPropagation(); // <--- ADDED: Stop browser from seeing this event
                 carousel.scrollLeft += evt.deltaY;
             }
             // If Scrolling UP (Negative Y) and NOT at the start -> Go Left
             else if (evt.deltaY < 0 && !isAtStart) {
                 evt.preventDefault();
+                evt.stopPropagation(); // <--- ADDED: Stop browser from seeing this event
                 carousel.scrollLeft += evt.deltaY;
             }
             // Otherwise, do nothing and let the page scroll vertically
