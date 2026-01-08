@@ -88,7 +88,6 @@ function initGallery() {
     // 2. Get Containers
     const dirLongContainer = document.getElementById('container-directors-long');
     const dirShortsContainer = document.getElementById('container-directors-shorts');
-    
     const mowingContainer = document.getElementById('carousel-mowingbest');
     const chorbieLongContainer = document.getElementById('container-chorbie-long');
     const chorbieShortsContainer = document.getElementById('carousel-chorbie-shorts');
@@ -96,31 +95,89 @@ function initGallery() {
 
     // 3. Sort and Render
     videoData.forEach(vid => {
-        // --- DIRECTOR'S CUT LOGIC ---
+        // ... (Your existing sorting logic is fine, keeping it brief for the copy-paste) ...
+        // Director's Cut
         if (vid.edit) {
-            if (vid.type === "short") {
-                // If edit is a short, go to the Carousel Shelf
-                renderVideo(vid, dirShortsContainer, false); 
-            } else {
-                // If edit is long, go to the Main Grid
-                renderVideo(vid, dirLongContainer, true);
-            }
+            if (vid.type === "short") renderVideo(vid, dirShortsContainer, false); 
+            else renderVideo(vid, dirLongContainer, true);
         }
-
-        // --- COMPANY LOGIC ---
-        if (vid.company === "wx") {
-            renderVideo(vid, wxContainer, true);
-        }
-        else if (vid.company === "mb" && !vid.edit) {
-            renderVideo(vid, mowingContainer, false); 
-        }
+        // WX
+        if (vid.company === "wx") renderVideo(vid, wxContainer, true);
+        // Mowing Best
+        else if (vid.company === "mb" && !vid.edit) renderVideo(vid, mowingContainer, false); 
+        // Chorbie
         else if (vid.company === "chorbie" && !vid.edit) {
-            if (vid.type === "short") {
-                renderVideo(vid, chorbieShortsContainer, false);
-            } else {
-                renderVideo(vid, chorbieLongContainer, true);
-            }
+            if (vid.type === "short") renderVideo(vid, chorbieShortsContainer, false);
+            else renderVideo(vid, chorbieLongContainer, true);
         }
+    });
+
+    // 4. ACTIVATE ADVANCED UX (The Ghost Buttons & Wheel Logic)
+    setupCarouselUX();
+}
+
+function setupCarouselUX() {
+    // Find all carousels
+    const carousels = document.querySelectorAll('.video-carousel');
+
+    carousels.forEach(carousel => {
+        // A. Wrap the carousel in a relative container
+        const wrapper = document.createElement('div');
+        wrapper.className = 'carousel-wrapper';
+        carousel.parentNode.insertBefore(wrapper, carousel);
+        wrapper.appendChild(carousel);
+
+        // B. Create Ghost Buttons
+        const btnLeft = document.createElement('button');
+        btnLeft.className = 'scroll-btn scroll-btn-left hidden'; // Start hidden
+        btnLeft.innerHTML = '<i class="fas fa-chevron-left"></i>';
+
+        const btnRight = document.createElement('button');
+        btnRight.className = 'scroll-btn scroll-btn-right';
+        btnRight.innerHTML = '<i class="fas fa-chevron-right"></i>';
+
+        wrapper.appendChild(btnLeft);
+        wrapper.appendChild(btnRight);
+
+        // C. Button Click Logic
+        btnLeft.onclick = () => carousel.scrollBy({ left: -300, behavior: 'smooth' });
+        btnRight.onclick = () => carousel.scrollBy({ left: 300, behavior: 'smooth' });
+
+        // D. Visibility Logic (Hide buttons at start/end)
+        const updateButtons = () => {
+            const tolerance = 10; // Pixel buffer
+            // At Start?
+            if (carousel.scrollLeft <= tolerance) btnLeft.classList.add('hidden');
+            else btnLeft.classList.remove('hidden');
+
+            // At End?
+            if (carousel.scrollLeft + carousel.clientWidth >= carousel.scrollWidth - tolerance) {
+                btnRight.classList.add('hidden');
+            } else {
+                btnRight.classList.remove('hidden');
+            }
+        };
+
+        // Listen for scroll events to update buttons
+        carousel.addEventListener('scroll', updateButtons);
+
+        // E. THE MOUSE WHEEL HACK (Vertical -> Horizontal)
+        carousel.addEventListener('wheel', (evt) => {
+            const isAtEnd = carousel.scrollLeft + carousel.clientWidth >= carousel.scrollWidth - 10;
+            const isAtStart = carousel.scrollLeft <= 0;
+            
+            // If Scrolling DOWN (Positive Y) and NOT at the end -> Go Right
+            if (evt.deltaY > 0 && !isAtEnd) {
+                evt.preventDefault();
+                carousel.scrollLeft += evt.deltaY;
+            }
+            // If Scrolling UP (Negative Y) and NOT at the start -> Go Left
+            else if (evt.deltaY < 0 && !isAtStart) {
+                evt.preventDefault();
+                carousel.scrollLeft += evt.deltaY;
+            }
+            // Otherwise, do nothing and let the page scroll vertically
+        });
     });
 }
 

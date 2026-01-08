@@ -268,39 +268,100 @@ h1, h2, h3, h4, h5, .sidebar-heading, .navbar-brand {
     z-index: 1000;
 }
 
-/* --- MEDIA PORTFOLIO STYLES (FINALIZED) --- */
+/* --- MEDIA PORTFOLIO STYLES (ENHANCED) --- */
 
-/* The "Dark Shelf" for Shorts */
+/* 1. The Wrapper (Created by JS) */
+/* This holds the carousel and the ghost buttons together */
+.carousel-wrapper {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+/* 2. The Carousel Tunnel */
 .video-carousel {
     display: flex;
     overflow-x: auto;
     padding-bottom: 20px;
     gap: 15px;
+    
+    /* Netflix-Style Physics */
+    scroll-snap-type: x mandatory; 
+    scroll-behavior: smooth;       
+    -webkit-overflow-scrolling: touch;
+
+    /* Visuals */
     scrollbar-width: thin; 
     scrollbar-color: #0dcaf0 #212529;
-    
-    /* Option A: Dark Shelf Styling */
     background: rgba(0, 0, 0, 0.4); 
     padding: 15px;                   
     border-radius: 12px;             
     border: 1px solid rgba(255, 255, 255, 0.05); 
-    margin-bottom: 20px;
 }
 
-/* Custom Scrollbar for Carousel */
-.video-carousel::-webkit-scrollbar {
-    height: 8px;
-}
-.video-carousel::-webkit-scrollbar-track {
-    background: rgba(255,255,255,0.05);
-    border-radius: 4px;
-}
-.video-carousel::-webkit-scrollbar-thumb {
-    background-color: #0dcaf0;
-    border-radius: 4px;
+/* Scrollbar Styling */
+.video-carousel::-webkit-scrollbar { height: 8px; }
+.video-carousel::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 4px; }
+.video-carousel::-webkit-scrollbar-thumb { background-color: #0dcaf0; border-radius: 4px; }
+
+/* 3. Ghost Buttons (The Arrows) */
+.scroll-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    width: 50px;
+    height: 80%; /* Takes up most of the height */
+    border: none;
+    background: rgba(0, 0, 0, 0.6);
+    color: #0dcaf0;
+    font-size: 1.5rem;
+    cursor: pointer;
+    
+    /* The Ghost Effect */
+    opacity: 0;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(4px);
+    
+    /* Centering the icon */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* Video Cards */
+/* Reveal buttons when mouse enters the wrapper */
+.carousel-wrapper:hover .scroll-btn {
+    opacity: 1;
+}
+
+/* Button Locations & Shapes */
+.scroll-btn-left {
+    left: 0;
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+    background: linear-gradient(to right, rgba(0,0,0,0.9), transparent);
+}
+
+.scroll-btn-right {
+    right: 0;
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+    background: linear-gradient(to left, rgba(0,0,0,0.9), transparent);
+}
+
+/* Hover effects for the buttons themselves */
+.scroll-btn:hover {
+    background: rgba(13, 202, 240, 0.2); /* Cyan Glow */
+    color: #fff;
+    box-shadow: 0 0 15px rgba(13, 202, 240, 0.3);
+}
+
+/* Hide button if disabled (at start/end of list) */
+.scroll-btn.hidden {
+    opacity: 0 !important;
+    pointer-events: none;
+}
+
+/* 4. Video Cards */
 .video-card {
     background: rgba(25, 30, 35, 0.9);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -315,14 +376,12 @@ h1, h2, h3, h4, h5, .sidebar-heading, .navbar-brand {
     border-color: #0dcaf0;
 }
 
-/* FIX: Force absolute positioning to stop videos from smashing/disappearing */
 .video-card .ratio {
     position: relative;
     width: 100%;
     background-color: #000;
 }
 
-/* We use !important to override any browser default behavior */
 .video-card .ratio iframe {
     position: absolute !important;
     top: 0 !important;
@@ -333,17 +392,11 @@ h1, h2, h3, h4, h5, .sidebar-heading, .navbar-brand {
     object-fit: cover !important;
 }
 
-/* Sizing for Carousel Items (Vertical Shorts) */
 .carousel-item-short {
     width: 200px;
     flex-shrink: 0;
+    scroll-snap-align: start; /* Locks the item to the grid */
 }
 
-/* Custom Aspect Ratio for Shorts */
-.ratio-9x16 {
-    --bs-aspect-ratio: 177.78%; 
-}
-
-.video-hidden {
-    display: none !important;
-}
+.ratio-9x16 { --bs-aspect-ratio: 177.78%; }
+.video-hidden { display: none !important; }
