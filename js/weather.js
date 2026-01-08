@@ -1,5 +1,5 @@
 // js/weather.js
-// SKYNET V2.6 - STABILITY PATCH (Moon Phase Logic Fix)
+// SKYNET V2.7 - PATCHED (Fixed "Double Day" Timezone Bug)
 
 const SECTORS = {
     dfw: {
@@ -157,7 +157,6 @@ function renderDashboard(data, isSimulation) {
 // --- HELPERS ---
 
 function getMoonPhase(date) {
-    // FIX: Changed 'const' to 'let' because we modify these variables below
     let year = date.getFullYear();
     let month = date.getMonth() + 1;
     const day = date.getDate();
@@ -180,7 +179,8 @@ function renderForecast(forecastData) {
 
     forecastData.forEach(day => {
         const dateObj = new Date(day.date * 1000);
-        const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'short' });
+        // FIX: Added { timeZone: 'UTC' } to prevent "Midnight UTC" from shifting back to "Yesterday PM"
+        const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'short', timeZone: 'UTC' });
         const moon = getMoonPhase(dateObj);
         const iconUrl = `https://openweathermap.org/img/wn/${day.icon}.png`;
 
