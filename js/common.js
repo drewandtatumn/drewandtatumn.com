@@ -15,7 +15,6 @@ window.onload = function() {
     initNetworkAnimation(); 
     
     // 2. Set Theme based on time
-    // (We default to a generic time check since we don't have weather data on every page)
     const hour = new Date().getHours();
     if(hour < 6 || hour > 20) window.canvasThemeColor = "13, 202, 240"; // Night/Cyan
     else window.canvasThemeColor = "13, 202, 240"; // Day/Cyan (Customizable later)
@@ -31,7 +30,38 @@ window.onload = function() {
     if (menuClose && wrapper) {
         menuClose.addEventListener("click", e => { e.preventDefault(); wrapper.classList.remove("toggled"); });
     }
+
+    // 4. Start Camera Reloader (If Cam Exists)
+    initCamReloader();
 };
+
+// --- LIVE CAM RELOADER ---
+function initCamReloader() {
+    const camImage = document.getElementById('sector-cam');
+    const timeLabel = document.getElementById('cam-timestamp');
+    
+    if (!camImage) return;
+
+    // The Magic Link (DriveHQ)
+    const baseUrl = "https://cameraftpapi.drivehq.com/api/Camera/GetLastCameraImage.aspx?parentID=347695945&shareID=17138700";
+
+    // Update immediately
+    updateCam();
+
+    // Update every 60 seconds
+    setInterval(updateCam, 60000);
+
+    function updateCam() {
+        const now = new Date();
+        // CRITICAL: Using '&' because the URL already has parameters
+        camImage.src = `${baseUrl}&t=${now.getTime()}`;
+        
+        if(timeLabel) {
+            timeLabel.innerText = `LAST SYNC: ${now.toLocaleTimeString()}`;
+        }
+        console.log("Sector Cam Refreshed");
+    }
+}
 
 // --- NETWORK BACKGROUND ANIMATION (ZODIAC + THEME) ---
 function initNetworkAnimation() {
