@@ -1,5 +1,5 @@
 // js/common.js
-// CORE SYSTEMS: Shared logic for Sidebar, Animation, and Theme
+// CORE SYSTEMS: Sidebar, Animation, and Theme ONLY
 
 // CONFIGURATION
 const WORKER_URL = "https://mathis-oracle.drewandtatumn.workers.dev"; 
@@ -16,8 +16,8 @@ window.onload = function() {
     
     // 2. Set Theme based on time
     const hour = new Date().getHours();
-    if(hour < 6 || hour > 20) window.canvasThemeColor = "13, 202, 240"; // Night/Cyan
-    else window.canvasThemeColor = "13, 202, 240"; // Day/Cyan (Customizable later)
+    if(hour < 6 || hour > 20) window.canvasThemeColor = "13, 202, 240"; // Night
+    else window.canvasThemeColor = "13, 202, 240"; // Day
 
     // 3. Sidebar Logic
     const menuToggle = document.getElementById("menu-toggle");
@@ -30,40 +30,9 @@ window.onload = function() {
     if (menuClose && wrapper) {
         menuClose.addEventListener("click", e => { e.preventDefault(); wrapper.classList.remove("toggled"); });
     }
-
-    // 4. Start Camera Reloader (If Cam Exists)
-    initCamReloader();
 };
 
-// --- LIVE CAM RELOADER ---
-function initCamReloader() {
-    const camImage = document.getElementById('sector-cam');
-    const timeLabel = document.getElementById('cam-timestamp');
-    
-    if (!camImage) return;
-
-    // The Magic Link (DriveHQ)
-    const baseUrl = "https://cameraftpapi.drivehq.com/api/Camera/GetLastCameraImage.aspx?parentID=347695945&shareID=17138700";
-
-    // Update immediately
-    updateCam();
-
-    // Update every 60 seconds
-    setInterval(updateCam, 60000);
-
-    function updateCam() {
-        const now = new Date();
-        // CRITICAL: Using '&' because the URL already has parameters
-        camImage.src = `${baseUrl}&t=${now.getTime()}`;
-        
-        if(timeLabel) {
-            timeLabel.innerText = `LAST SYNC: ${now.toLocaleTimeString()}`;
-        }
-        console.log("Sector Cam Refreshed");
-    }
-}
-
-// --- NETWORK BACKGROUND ANIMATION (ZODIAC + THEME) ---
+// --- NETWORK BACKGROUND ANIMATION ---
 function initNetworkAnimation() {
     const canvas = document.getElementById('canvas-network');
     if (!canvas) return;
@@ -77,18 +46,18 @@ function initNetworkAnimation() {
         const date = new Date();
         const d = date.getDate();
         const m = date.getMonth() + 1; 
-        if((m==1 && d<=19) || (m==12 && d>=22)) return '♑'; // Capricorn
-        if((m==1 && d>=20) || (m==2 && d<=18)) return '♒'; // Aquarius
-        if((m==2 && d>=19) || (m==3 && d<=20)) return '♓'; // Pisces
-        if((m==3 && d>=21) || (m==4 && d<=19)) return '♈'; // Aries
-        if((m==4 && d>=20) || (m==5 && d<=20)) return '♉'; // Taurus
-        if((m==5 && d>=21) || (m==6 && d<=20)) return '♊'; // Gemini
-        if((m==6 && d>=21) || (m==7 && d<=22)) return '♋'; // Cancer
-        if((m==7 && d>=23) || (m==8 && d<=22)) return '♌'; // Leo
-        if((m==8 && d>=23) || (m==9 && d<=22)) return '♍'; // Virgo
-        if((m==9 && d>=23) || (m==10 && d<=22)) return '♎'; // Libra
-        if((m==10 && d>=23) || (m==11 && d<=21)) return '♏'; // Scorpio
-        if((m==11 && d>=22) || (m==12 && d<=21)) return '♐'; // Sagittarius
+        if((m==1 && d<=19) || (m==12 && d>=22)) return '♑'; 
+        if((m==1 && d>=20) || (m==2 && d<=18)) return '♒'; 
+        if((m==2 && d>=19) || (m==3 && d<=20)) return '♓'; 
+        if((m==3 && d>=21) || (m==4 && d<=19)) return '♈'; 
+        if((m==4 && d>=20) || (m==5 && d<=20)) return '♉'; 
+        if((m==5 && d>=21) || (m==6 && d<=20)) return '♊'; 
+        if((m==6 && d>=21) || (m==7 && d<=22)) return '♋'; 
+        if((m==7 && d>=23) || (m==8 && d<=22)) return '♌'; 
+        if((m==8 && d>=23) || (m==9 && d<=22)) return '♍'; 
+        if((m==9 && d>=23) || (m==10 && d<=22)) return '♎'; 
+        if((m==10 && d>=23) || (m==11 && d<=21)) return '♏'; 
+        if((m==11 && d>=22) || (m==12 && d<=21)) return '♐'; 
         return '';
     }
 
@@ -113,10 +82,8 @@ function initNetworkAnimation() {
     
     function animate() {
         ctx.clearRect(0, 0, width, height);
-        
-        // Draw Zodiac Watermark
         ctx.font = "200px serif";
-        ctx.fillStyle = `rgba(${window.canvasThemeColor}, 0.05)`; // Very subtle watermark
+        ctx.fillStyle = `rgba(${window.canvasThemeColor}, 0.05)`; 
         ctx.textAlign = "right";
         ctx.textBaseline = "bottom";
         ctx.fillText(getZodiacSymbol(), width - 20, height - 20);

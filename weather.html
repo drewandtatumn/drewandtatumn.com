@@ -144,8 +144,27 @@
                             <div class="card-header border-0 bg-transparent py-2">
                                 <small class="text-warning text-label"><i class="fas fa-radar me-2"></i> Live Doppler Radar</small>
                             </div>
-                            <div class="card-body p-0 d-flex flex-column">
-                                <iframe id="weather-radar" class="flex-grow-1 w-100 rounded-bottom" style="min-height: 350px; border: none;" src=""></iframe>
+                            <div class="card-body p-0 position-relative" style="height: 350px; overflow: hidden;">    
+                                <iframe id="feed-video" class="w-100 h-100" style="border:none;" src="" allowfullscreen></iframe>
+
+                                <div id="feed-image-container" class="w-100 h-100 position-relative d-none">
+                                    <img id="sector-cam" 
+                                        src="" 
+                                        alt="Sector Cam Unavailable"
+                                        style="width: 100%; height: 100%; object-fit: cover;">
+                                    
+                                    <div class="position-absolute bottom-0 start-0 p-2 w-100" 
+                                        style="background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);">
+                                        <div class="d-flex justify-content-between align-items-end">
+                                            <div>
+                                                <small class="text-white fw-bold d-block">CAM: UFA_SOUTH_SLC</small>
+                                                <small class="text-info" style="font-size: 0.7rem;">Unified Fire Authority</small>
+                                            </div>
+                                            <small class="text-white" id="cam-timestamp" style="font-family: monospace;">SYNCING...</small>
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -157,21 +176,27 @@
                                 <span class="badge bg-danger float-end animate-pulse">LIVE</span>
                             </div>
                             <div class="card-body p-0 position-relative" style="height: 350px; overflow: hidden;">
-                                <img id="sector-cam" 
-                                     src="https://cameraftpapi.drivehq.com/api/Camera/GetLastCameraImage.aspx?parentID=347695945&shareID=17138700" 
-                                     alt="Sector Cam Unavailable"
-                                     style="width: 100%; height: 100%; object-fit: cover;">
                                 
-                                <div class="position-absolute bottom-0 start-0 p-2 w-100" 
-                                     style="background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);">
-                                    <div class="d-flex justify-content-between align-items-end">
-                                        <div>
-                                            <small class="text-white fw-bold d-block">CAM: UFA_SOUTH_SLC</small>
-                                            <small class="text-info" style="font-size: 0.7rem;">Unified Fire Authority</small>
+                                <iframe id="feed-dfw" class="w-100 h-100" style="border:none;" src="" allowfullscreen></iframe>
+
+                                <div id="feed-slc" class="w-100 h-100 position-relative d-none">
+                                    <img id="sector-cam" 
+                                         src="" 
+                                         alt="Sector Cam Unavailable"
+                                         style="width: 100%; height: 100%; object-fit: cover;">
+                                    
+                                    <div class="position-absolute bottom-0 start-0 p-2 w-100" 
+                                         style="background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);">
+                                        <div class="d-flex justify-content-between align-items-end">
+                                            <div>
+                                                <small class="text-white fw-bold d-block">CAM: UFA_SOUTH_SLC</small>
+                                                <small class="text-info" style="font-size: 0.7rem;">Unified Fire Authority</small>
+                                            </div>
+                                            <small class="text-white" id="cam-timestamp" style="font-family: monospace;">SYNCING...</small>
                                         </div>
-                                        <small class="text-white" id="cam-timestamp" style="font-family: monospace;">SYNCING...</small>
                                     </div>
                                 </div>
+
                             </div>
                         </div>
                     </div>

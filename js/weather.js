@@ -1,21 +1,24 @@
 // js/weather.js
-// SKYNET V2.7 - PATCHED (Fixed "Double Day" Timezone Bug)
+// SKYNET V2.8 - HYBRID CAM FEED (Video + Auto-Reload Image)
 
 const SECTORS = {
     dfw: {
         name: "McKinney, TX",
-        // Updated Radar: Increased source dimensions to 1000x600 to fill container
+        // Radar: 1000x600
         radarUrl: "https://embed.windy.com/embed2.html?lat=32.8998&lon=-97.0403&detailLat=32.8998&detailLon=-97.0403&width=1000&height=600&zoom=9&level=surface&overlay=rain&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=mph&metricTemp=°F&radarRange=-1",
+        // YOUR DFW LINK PRESERVED:
         videoUrl: "https://www.youtube.com/embed/HkfKsRa9qnE?autoplay=1&mute=1&controls=0&rel=0"
     },
     slc: {
         name: "Salt Lake City, UT",
-        // Updated Radar: Increased source dimensions to 1000x600 to fill container
+        // Radar: 1000x600
         radarUrl: "https://embed.windy.com/embed2.html?lat=40.7608&lon=-111.8910&detailLat=40.7608&detailLon=-111.8910&width=1000&height=600&zoom=9&level=surface&overlay=rain&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=mph&metricTemp=°F&radarRange=-1",
-        videoUrl: "https://video.nest.com/embedded/live/qAupZ0qsW2?autoplay=1"
+        // SPECIAL FLAG: Tells the code to use the Image Reloader
+        videoUrl: "IMAGE_MODE" 
     }
 };
 
+// --- YOUR ORIGINAL DATA PRESERVED ---
 const SAFE_MODE_DATA = {
     weather: {
         temp: 72, feels_like: 70, condition: "SIMULATION", 
@@ -38,6 +41,7 @@ const SAFE_MODE_DATA = {
 let currentSector = 'dfw';
 let retryCount = 0;
 const retryDelays = [5000, 15000, 30000]; 
+let camInterval = null; // Timer for SLC Cam
 
 // --- INITIALIZATION ---
 initWeather();
@@ -62,17 +66,69 @@ function updateSector(sectorKey) {
     const label = document.getElementById('sector-label');
     if(label) label.innerHTML = `<i class="fas fa-satellite me-2"></i> SECTOR: ${sectorKey.toUpperCase()}`;
     
-    // Update Feeds
-    const videoFrame = document.getElementById('weather-video');
-    if (videoFrame && videoFrame.src !== sector.videoUrl) videoFrame.src = sector.videoUrl;
-
+    // Update Radar
     const radarFrame = document.getElementById('weather-radar');
     if (radarFrame && radarFrame.src !== sector.radarUrl) radarFrame.src = sector.radarUrl;
+
+    // --- HYBRID CAM LOGIC ---
+    const videoFrame = document.getElementById('feed-video');
+    const imageContainer = document.getElementById('feed-image-container');
+
+    if (sectorKey === 'dfw') {
+        // DFW MODE: Video ON, Image OFF
+        stopCamReloader(); // Stop SLC Timer
+        
+        if (videoFrame) {
+            videoFrame.classList.remove('d-none');
+            videoFrame.src = SECTORS['dfw'].videoUrl;
+        }
+        if (imageContainer) imageContainer.classList.add('d-none');
+
+    } else {
+        // SLC MODE: Video OFF, Image ON
+        if (videoFrame) {
+            videoFrame.classList.add('d-none');
+            videoFrame.src = ""; // Save bandwidth
+        }
+        if (imageContainer) imageContainer.classList.remove('d-none');
+        
+        startCamReloader(); // Start SLC Timer
+    }
 
     // Fetch Data
     fetchDashboardData(sectorKey);
 }
 
+// --- CAM RELOADER FUNCTIONS (New) ---
+function startCamReloader() {
+    const camImage = document.getElementById('sector-cam');
+    const timeLabel = document.getElementById('cam-timestamp');
+    const baseUrl = "https://cameraftpapi.drivehq.com/api/Camera/GetLastCameraImage.aspx?parentID=347695945&shareID=17138700";
+
+    if(camInterval) clearInterval(camInterval);
+
+    // Initial Load
+    updateCam();
+
+    // Loop
+    camInterval = setInterval(updateCam, 60000); 
+
+    function updateCam() {
+        const now = new Date();
+        // Uses '&' because DriveHQ URL has query params
+        if(camImage) camImage.src = `${baseUrl}&t=${now.getTime()}`;
+        if(timeLabel) timeLabel.innerText = `LAST SYNC: ${now.toLocaleTimeString()}`;
+    }
+}
+
+function stopCamReloader() {
+    if (camInterval) {
+        clearInterval(camInterval);
+        camInterval = null;
+    }
+}
+
+// --- DATA FETCHING (Your Original Logic) ---
 async function fetchDashboardData(sectorKey) {
     const condEl = document.getElementById('val-condition');
     const aiEl = document.getElementById('weather-ai-analysis');
@@ -154,7 +210,7 @@ function renderDashboard(data, isSimulation) {
     }
 }
 
-// --- HELPERS ---
+// --- HELPERS (Preserved) ---
 
 function getMoonPhase(date) {
     let year = date.getFullYear();
