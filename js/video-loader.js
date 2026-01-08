@@ -95,7 +95,6 @@ function initGallery() {
 
     // 3. Sort and Render
     videoData.forEach(vid => {
-        // ... (Your existing sorting logic is fine, keeping it brief for the copy-paste) ...
         // Director's Cut
         if (vid.edit) {
             if (vid.type === "short") renderVideo(vid, dirShortsContainer, false); 
@@ -127,9 +126,9 @@ function setupCarouselUX() {
         carousel.parentNode.insertBefore(wrapper, carousel);
         wrapper.appendChild(carousel);
 
-        // B. Create Ghost Buttons
+        // B. Create Ghost Buttons (Always visible on hover)
         const btnLeft = document.createElement('button');
-        btnLeft.className = 'scroll-btn scroll-btn-left hidden'; // Start hidden
+        btnLeft.className = 'scroll-btn scroll-btn-left';
         btnLeft.innerHTML = '<i class="fas fa-chevron-left"></i>';
 
         const btnRight = document.createElement('button');
@@ -139,29 +138,30 @@ function setupCarouselUX() {
         wrapper.appendChild(btnLeft);
         wrapper.appendChild(btnRight);
 
-        // C. Button Click Logic
-        btnLeft.onclick = () => carousel.scrollBy({ left: -300, behavior: 'smooth' });
-        btnRight.onclick = () => carousel.scrollBy({ left: 300, behavior: 'smooth' });
-
-        // D. Visibility Logic (Hide buttons at start/end)
-        const updateButtons = () => {
-            const tolerance = 10; // Pixel buffer
-            // At Start?
-            if (carousel.scrollLeft <= tolerance) btnLeft.classList.add('hidden');
-            else btnLeft.classList.remove('hidden');
-
-            // At End?
-            if (carousel.scrollLeft + carousel.clientWidth >= carousel.scrollWidth - tolerance) {
-                btnRight.classList.add('hidden');
+        // C. Smart Loop Logic (The Netflix Feel)
+        btnLeft.onclick = () => {
+            const tolerance = 10;
+            // If at Start -> Rewind to End
+            if (carousel.scrollLeft <= tolerance) {
+                carousel.scrollTo({ left: carousel.scrollWidth, behavior: 'smooth' });
             } else {
-                btnRight.classList.remove('hidden');
+                carousel.scrollBy({ left: -300, behavior: 'smooth' });
             }
         };
 
-        // Listen for scroll events to update buttons
-        carousel.addEventListener('scroll', updateButtons);
+        btnRight.onclick = () => {
+            const tolerance = 10;
+            const maxScroll = carousel.scrollWidth - carousel.clientWidth;
+            // If at End -> Fast Forward to Start
+            if (carousel.scrollLeft >= maxScroll - tolerance) {
+                carousel.scrollTo({ left: 0, behavior: 'smooth' });
+            } else {
+                carousel.scrollBy({ left: 300, behavior: 'smooth' });
+            }
+        };
 
         // E. THE MOUSE WHEEL HACK (Vertical -> Horizontal)
+        // Added { passive: false } to force the browser to respect our "Stop Scrolling Down" command
         carousel.addEventListener('wheel', (evt) => {
             const isAtEnd = carousel.scrollLeft + carousel.clientWidth >= carousel.scrollWidth - 10;
             const isAtStart = carousel.scrollLeft <= 0;
@@ -177,7 +177,7 @@ function setupCarouselUX() {
                 carousel.scrollLeft += evt.deltaY;
             }
             // Otherwise, do nothing and let the page scroll vertically
-        });
+        }, { passive: false });
     });
 }
 
