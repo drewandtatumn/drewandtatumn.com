@@ -1,24 +1,21 @@
 // js/weather.js
-// SKYNET V2.8 - HYBRID CAM FEED (Video + Auto-Reload Image)
+// SKYNET V3.0 - HYBRID FEED (Video + Auto-Reload Image)
 
 const SECTORS = {
     dfw: {
         name: "McKinney, TX",
-        // Radar: 1000x600
         radarUrl: "https://embed.windy.com/embed2.html?lat=32.8998&lon=-97.0403&detailLat=32.8998&detailLon=-97.0403&width=1000&height=600&zoom=9&level=surface&overlay=rain&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=mph&metricTemp=°F&radarRange=-1",
-        // YOUR DFW LINK PRESERVED:
+        // DFW uses the video player
         videoUrl: "https://www.youtube.com/embed/HkfKsRa9qnE?autoplay=1&mute=1&controls=0&rel=0"
     },
     slc: {
         name: "Salt Lake City, UT",
-        // Radar: 1000x600
         radarUrl: "https://embed.windy.com/embed2.html?lat=40.7608&lon=-111.8910&detailLat=40.7608&detailLon=-111.8910&width=1000&height=600&zoom=9&level=surface&overlay=rain&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=mph&metricTemp=°F&radarRange=-1",
-        // SPECIAL FLAG: Tells the code to use the Image Reloader
+        // SLC uses the image reloader (URL handled in logic below)
         videoUrl: "IMAGE_MODE" 
     }
 };
 
-// --- YOUR ORIGINAL DATA PRESERVED ---
 const SAFE_MODE_DATA = {
     weather: {
         temp: 72, feels_like: 70, condition: "SIMULATION", 
@@ -41,10 +38,12 @@ const SAFE_MODE_DATA = {
 let currentSector = 'dfw';
 let retryCount = 0;
 const retryDelays = [5000, 15000, 30000]; 
-let camInterval = null; // Timer for SLC Cam
+let camInterval = null; // Stores the timer for the SLC camera
 
 // --- INITIALIZATION ---
-initWeather();
+document.addEventListener("DOMContentLoaded", () => {
+    initWeather();
+});
 
 function initWeather() {
     retryCount = 0; 
@@ -55,69 +54,72 @@ function updateSector(sectorKey) {
     currentSector = sectorKey;
     const sector = SECTORS[sectorKey];
     
-    // UI Updates
+    // 1. UI Updates (Buttons & Label)
     const btnDfw = document.getElementById('btn-dfw');
     const btnSlc = document.getElementById('btn-slc');
     if(btnDfw && btnSlc) {
-        btnDfw.className = `btn btn-sm ${sectorKey === 'dfw' ? 'btn-info' : 'btn-outline-secondary'}`;
-        btnSlc.className = `btn btn-sm ${sectorKey === 'slc' ? 'btn-info' : 'btn-outline-secondary'}`;
+        btnDfw.className = `btn btn-sm ${sectorKey === 'dfw' ? 'btn-outline-info active' : 'btn-outline-secondary'}`;
+        btnSlc.className = `btn btn-sm ${sectorKey === 'slc' ? 'btn-outline-info active' : 'btn-outline-secondary'}`;
     }
 
     const label = document.getElementById('sector-label');
     if(label) label.innerHTML = `<i class="fas fa-satellite me-2"></i> SECTOR: ${sectorKey.toUpperCase()}`;
     
-    // Update Radar
+    // 2. Update Radar (Left Card)
     const radarFrame = document.getElementById('weather-radar');
     if (radarFrame && radarFrame.src !== sector.radarUrl) radarFrame.src = sector.radarUrl;
 
-    // --- HYBRID CAM LOGIC ---
-    const videoFrame = document.getElementById('feed-video');
-    const imageContainer = document.getElementById('feed-image-container');
+    // 3. Update Hybrid Feed (Right Card)
+    const videoFrame = document.getElementById('feed-dfw');      // The Iframe
+    const imageContainer = document.getElementById('feed-slc'); // The Div with the Image
 
     if (sectorKey === 'dfw') {
-        // DFW MODE: Video ON, Image OFF
-        stopCamReloader(); // Stop SLC Timer
+        // --- DFW MODE: Video ON, Image OFF ---
+        stopCamReloader(); // Stop the SLC timer to save bandwidth
         
         if (videoFrame) {
             videoFrame.classList.remove('d-none');
-            videoFrame.src = SECTORS['dfw'].videoUrl;
+            // Only set src if it changed (prevents flickering)
+            if(videoFrame.src !== SECTORS['dfw'].videoUrl) videoFrame.src = SECTORS['dfw'].videoUrl;
         }
         if (imageContainer) imageContainer.classList.add('d-none');
 
     } else {
-        // SLC MODE: Video OFF, Image ON
+        // --- SLC MODE: Video OFF, Image ON ---
         if (videoFrame) {
             videoFrame.classList.add('d-none');
-            videoFrame.src = ""; // Save bandwidth
+            videoFrame.src = ""; // Clear source to stop video/save bandwidth
         }
         if (imageContainer) imageContainer.classList.remove('d-none');
         
-        startCamReloader(); // Start SLC Timer
+        startCamReloader(); // Start the 60-second update loop
     }
 
-    // Fetch Data
+    // 4. Fetch Weather Data
     fetchDashboardData(sectorKey);
 }
 
-// --- CAM RELOADER FUNCTIONS (New) ---
+// --- CAM RELOADER LOGIC (For DriveHQ) ---
 function startCamReloader() {
     const camImage = document.getElementById('sector-cam');
     const timeLabel = document.getElementById('cam-timestamp');
     const baseUrl = "https://cameraftpapi.drivehq.com/api/Camera/GetLastCameraImage.aspx?parentID=347695945&shareID=17138700";
 
+    // Stop any existing timer
     if(camInterval) clearInterval(camInterval);
 
     // Initial Load
     updateCam();
 
-    // Loop
+    // Start Loop (60 seconds)
     camInterval = setInterval(updateCam, 60000); 
 
     function updateCam() {
         const now = new Date();
-        // Uses '&' because DriveHQ URL has query params
+        // IMPORTANT: Use '&' because DriveHQ URL already has parameters
         if(camImage) camImage.src = `${baseUrl}&t=${now.getTime()}`;
         if(timeLabel) timeLabel.innerText = `LAST SYNC: ${now.toLocaleTimeString()}`;
+        console.log("SLC Cam Refreshed");
     }
 }
 
@@ -125,10 +127,11 @@ function stopCamReloader() {
     if (camInterval) {
         clearInterval(camInterval);
         camInterval = null;
+        console.log("SLC Cam Paused");
     }
 }
 
-// --- DATA FETCHING (Your Original Logic) ---
+// --- DATA FETCHING & RENDERING (Standard) ---
 async function fetchDashboardData(sectorKey) {
     const condEl = document.getElementById('val-condition');
     const aiEl = document.getElementById('weather-ai-analysis');
@@ -139,7 +142,7 @@ async function fetchDashboardData(sectorKey) {
     }
 
     try {
-        const response = await fetch(WORKER_URL, {
+        const response = await fetch("https://mathis-oracle.drewandtatumn.workers.dev", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ type: "dashboard_update", sector: sectorKey }) 
@@ -177,15 +180,15 @@ function renderDashboard(data, isSimulation) {
     try { updateThemeColor(w.sunrise, w.sunset); } catch(e) { console.error("Theme Error", e); }
 
     try {
-        document.getElementById('val-temp').innerText = w.temp + "°";
-        document.getElementById('val-feels').innerText = w.feels_like + "°";
+        document.getElementById('val-temp').innerText = Math.round(w.temp) + "°";
+        document.getElementById('val-feels').innerText = Math.round(w.feels_like) + "°";
         document.getElementById('val-condition').innerText = w.condition.toUpperCase();
-        document.getElementById('val-wind').innerText = w.wind + " mph";
-        document.getElementById('val-gust').innerText = w.wind_gust + " mph";
+        document.getElementById('val-wind').innerText = Math.round(w.wind) + " mph";
+        document.getElementById('val-gust').innerText = Math.round(w.wind_gust) + " mph";
         document.getElementById('val-wind-dir').innerText = getCardinalDirection(w.wind_deg);
         document.getElementById('val-pressure').innerText = w.pressure;
         document.getElementById('val-humid').innerText = w.humidity;
-        document.getElementById('val-dew').innerText = w.dew_point;
+        document.getElementById('val-dew').innerText = Math.round(w.dew_point);
         document.getElementById('val-clouds').innerText = w.clouds;
         document.getElementById('val-vis').innerText = (w.visibility / 1609.34).toFixed(1);
 
@@ -210,8 +213,6 @@ function renderDashboard(data, isSimulation) {
     }
 }
 
-// --- HELPERS (Preserved) ---
-
 function getMoonPhase(date) {
     let year = date.getFullYear();
     let month = date.getMonth() + 1;
@@ -235,7 +236,6 @@ function renderForecast(forecastData) {
 
     forecastData.forEach(day => {
         const dateObj = new Date(day.date * 1000);
-        // FIX: Added { timeZone: 'UTC' } to prevent "Midnight UTC" from shifting back to "Yesterday PM"
         const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'short', timeZone: 'UTC' });
         const moon = getMoonPhase(dateObj);
         const iconUrl = `https://openweathermap.org/img/wn/${day.icon}.png`;
@@ -249,7 +249,7 @@ function renderForecast(forecastData) {
                     </div>
                     <img src="${iconUrl}" alt="${day.condition}" style="width: 40px; height: 40px; margin: 0 auto;">
                     <div class="text-white fw-bold my-1">
-                        <span class="text-danger">${day.high}°</span> <span class="text-secondary">/</span> <span class="text-info">${day.low}°</span>
+                        <span class="text-danger">${Math.round(day.high)}°</span> <span class="text-secondary">/</span> <span class="text-info">${Math.round(day.low)}°</span>
                     </div>
                     <div class="d-flex justify-content-center gap-2 mt-1">
                         <small class="text-info" title="Rain Chance"><i class="fas fa-umbrella"></i> ${day.pop}%</small>
@@ -291,4 +291,18 @@ function getCardinalDirection(angle) {
     if (typeof angle !== 'number') return "";
     const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
     return directions[Math.round(angle / 45) % 8];
+}
+
+function typewriterEffect(element, text) {
+    element.innerHTML = "";
+    let i = 0;
+    const speed = 20; 
+    function type() {
+        if (i < text.length) {
+            element.innerHTML += text.charAt(i);
+            i++;
+            setTimeout(type, speed);
+        }
+    }
+    type();
 }

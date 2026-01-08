@@ -40,21 +40,11 @@
                 <small class="text-white" style="font-size: 0.6rem; opacity: 0.8;">EST. 2024</small>
             </div>
             <div class="list-group list-group-flush">
-                <a href="index.html" class="list-group-item">
-                    <i class="fas fa-home me-3"></i> HQ
-                </a>
-                <a href="ai.html" class="list-group-item">
-                    <i class="fas fa-brain me-3"></i> The Oracle (AI)
-                </a>
-                <a href="weather.html" class="list-group-item active-link">
-                    <i class="fas fa-cloud-sun-rain me-3"></i> SkyNet (Weather)
-                </a>
-                <a href="media-portfolio.html" class="list-group-item">
-                    <i class="fas fa-film me-3"></i> Media Portfolio
-                </a>
-                <a href="projects.html" class="list-group-item">
-                    <i class="fas fa-code-branch me-3"></i> Projects
-                </a>
+                <a href="index.html" class="list-group-item"><i class="fas fa-home me-3"></i> HQ</a>
+                <a href="ai.html" class="list-group-item"><i class="fas fa-brain me-3"></i> The Oracle (AI)</a>
+                <a href="weather.html" class="list-group-item active-link"><i class="fas fa-cloud-sun-rain me-3"></i> SkyNet (Weather)</a>
+                <a href="media-portfolio.html" class="list-group-item"><i class="fas fa-film me-3"></i> Media Portfolio</a>
+                <a href="projects.html" class="list-group-item"><i class="fas fa-code-branch me-3"></i> Projects</a>
             </div>
         </div>
 
@@ -62,7 +52,6 @@
             
             <nav class="navbar navbar-dark bg-transparent py-3 px-4">
                 <button class="btn btn-outline-light d-md-none" id="menu-toggle"><i class="fas fa-bars"></i></button>
-                
                 <div class="ms-auto d-flex align-items-center">
                     <span class="text-secondary me-3 d-none d-sm-block small">Authorized Personnel Only</span>
                     <a href="https://private.drewandtatumn.com" class="btn btn-login-glow">
@@ -114,24 +103,19 @@
                                         <div class="text-label small">FEELS LIKE <span id="val-feels">--°</span></div>
                                     </div>
                                 </div>
-                                
                                 <hr class="border-secondary opacity-25">
-
                                 <div class="row g-2 text-center">
-                                    <div class="col-4"><div class="data-tile" title="Sustained wind speed in MPH"><span class="text-label">WIND</span><span class="text-value" id="val-wind">--</span></div></div>
-                                    <div class="col-4"><div class="data-tile" title="Brief increases in wind speed"><span class="text-label">GUSTS</span><span class="text-value" id="val-gust">--</span></div></div>
-                                    <div class="col-4"><div class="data-tile" title="Compass direction the wind is coming FROM"><span class="text-label">DIR</span><span class="text-info fw-bold" id="val-wind-dir">--</span></div></div>
-
-                                    <div class="col-4"><div class="data-tile" title="Amount of water vapor in the air (%)"><span class="text-label">HUMIDITY</span><span class="text-value"><span id="val-humid">--</span>%</span></div></div>
-                                    <div class="col-4"><div class="data-tile" title="Temp at which dew forms. Closer to air temp = Sticky."><span class="text-label">DEW PT</span><span class="text-value"><span id="val-dew">--</span>°</span></div></div>
-                                    <div class="col-4"><div class="data-tile" title="Atmospheric pressure. Lower = Stormy."><span class="text-label">PRESSURE</span><span class="text-warning fw-bold"><span id="val-pressure">--</span></span></div></div>
-
-                                    <div class="col-4"><div class="data-tile" title="Distance one can clearly see (Miles)"><span class="text-label">VISIBILITY</span><span class="text-value"><span id="val-vis">--</span> mi</span></div></div>
-                                    <div class="col-4"><div class="data-tile" title="Percentage of sky covered by clouds"><span class="text-label">CLOUDS</span><span class="text-value"><span id="val-clouds">--</span>%</span></div></div>
-                                    <div class="col-4"><div class="data-tile" title="UV Index (Solar Radiation Strength)"><span class="text-label">UV</span><span class="text-value">--</span></div></div>
-
-                                    <div class="col-6"><div class="data-tile" title="Time of first light"><span class="text-label">SUNRISE</span><span class="text-value" id="val-sunrise">--:--</span></div></div>
-                                    <div class="col-6"><div class="data-tile" title="Time of last light"><span class="text-label">SUNSET</span><span class="text-value" id="val-sunset">--:--</span></div></div>
+                                    <div class="col-4"><div class="data-tile" title="Wind"><span class="text-label">WIND</span><span class="text-value" id="val-wind">--</span></div></div>
+                                    <div class="col-4"><div class="data-tile" title="Gusts"><span class="text-label">GUSTS</span><span class="text-value" id="val-gust">--</span></div></div>
+                                    <div class="col-4"><div class="data-tile" title="Direction"><span class="text-label">DIR</span><span class="text-info fw-bold" id="val-wind-dir">--</span></div></div>
+                                    <div class="col-4"><div class="data-tile" title="Humidity"><span class="text-label">HUMIDITY</span><span class="text-value"><span id="val-humid">--</span>%</span></div></div>
+                                    <div class="col-4"><div class="data-tile" title="Dew Point"><span class="text-label">DEW PT</span><span class="text-value"><span id="val-dew">--</span>°</span></div></div>
+                                    <div class="col-4"><div class="data-tile" title="Pressure"><span class="text-label">PRESSURE</span><span class="text-warning fw-bold"><span id="val-pressure">--</span></span></div></div>
+                                    <div class="col-4"><div class="data-tile" title="Visibility"><span class="text-label">VISIBILITY</span><span class="text-value"><span id="val-vis">--</span> mi</span></div></div>
+                                    <div class="col-4"><div class="data-tile" title="Clouds"><span class="text-label">CLOUDS</span><span class="text-value"><span id="val-clouds">--</span>%</span></div></div>
+                                    <div class="col-4"><div class="data-tile" title="UV Index"><span class="text-label">UV</span><span class="text-value">--</span></div></div>
+                                    <div class="col-6"><div class="data-tile" title="Sunrise"><span class="text-label">SUNRISE</span><span class="text-value" id="val-sunrise">--:--</span></div></div>
+                                    <div class="col-6"><div class="data-tile" title="Sunset"><span class="text-label">SUNSET</span><span class="text-value" id="val-sunset">--:--</span></div></div>
                                 </div>
                             </div>
                         </div>
@@ -144,27 +128,8 @@
                             <div class="card-header border-0 bg-transparent py-2">
                                 <small class="text-warning text-label"><i class="fas fa-radar me-2"></i> Live Doppler Radar</small>
                             </div>
-                            <div class="card-body p-0 position-relative" style="height: 350px; overflow: hidden;">    
-                                <iframe id="feed-video" class="w-100 h-100" style="border:none;" src="" allowfullscreen></iframe>
-
-                                <div id="feed-image-container" class="w-100 h-100 position-relative d-none">
-                                    <img id="sector-cam" 
-                                        src="" 
-                                        alt="Sector Cam Unavailable"
-                                        style="width: 100%; height: 100%; object-fit: cover;">
-                                    
-                                    <div class="position-absolute bottom-0 start-0 p-2 w-100" 
-                                        style="background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);">
-                                        <div class="d-flex justify-content-between align-items-end">
-                                            <div>
-                                                <small class="text-white fw-bold d-block">CAM: UFA_SOUTH_SLC</small>
-                                                <small class="text-info" style="font-size: 0.7rem;">Unified Fire Authority</small>
-                                            </div>
-                                            <small class="text-white" id="cam-timestamp" style="font-family: monospace;">SYNCING...</small>
-                                        </div>
-                                    </div>
-                                </div>
-
+                            <div class="card-body p-0 d-flex flex-column">
+                                <iframe id="weather-radar" class="flex-grow-1 w-100 rounded-bottom" style="min-height: 350px; border: none;" src=""></iframe>
                             </div>
                         </div>
                     </div>
@@ -177,9 +142,9 @@
                             </div>
                             <div class="card-body p-0 position-relative" style="height: 350px; overflow: hidden;">
                                 
-                                <iframe id="feed-dfw" class="w-100 h-100" style="border:none;" src="" allowfullscreen></iframe>
+                                <iframe id="feed-video" class="w-100 h-100" style="border:none;" src="" allowfullscreen></iframe>
 
-                                <div id="feed-slc" class="w-100 h-100 position-relative d-none">
+                                <div id="feed-image" class="w-100 h-100 position-relative d-none">
                                     <img id="sector-cam" 
                                          src="" 
                                          alt="Sector Cam Unavailable"
