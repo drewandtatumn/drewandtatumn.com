@@ -1,11 +1,11 @@
 // js/weather.js
-// SKYNET V3.0 - HYBRID FEED (Video + Auto-Reload Image)
+// SKYNET V3.1 - FIXED ID TARGETING
 
 const SECTORS = {
     dfw: {
         name: "McKinney, TX",
         radarUrl: "https://embed.windy.com/embed2.html?lat=32.8998&lon=-97.0403&detailLat=32.8998&detailLon=-97.0403&width=1000&height=600&zoom=9&level=surface&overlay=rain&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=mph&metricTemp=°F&radarRange=-1",
-        // DFW uses the video player
+        // DFW uses the YouTube video player
         videoUrl: "https://www.youtube.com/embed/HkfKsRa9qnE?autoplay=1&mute=1&controls=0&rel=0"
     },
     slc: {
@@ -70,8 +70,14 @@ function updateSector(sectorKey) {
     if (radarFrame && radarFrame.src !== sector.radarUrl) radarFrame.src = sector.radarUrl;
 
     // 3. Update Hybrid Feed (Right Card)
-    const videoFrame = document.getElementById('feed-dfw');      // The Iframe
-    const imageContainer = document.getElementById('feed-slc'); // The Div with the Image
+    // We try to find the element by "feed-video" FIRST. 
+    // If your HTML uses "feed-dfw", you can change this line to getElementById('feed-dfw')
+    const videoFrame = document.getElementById('feed-video') || document.getElementById('feed-dfw');
+    const imageContainer = document.getElementById('feed-image') || document.getElementById('feed-slc'); 
+
+    if (!videoFrame || !imageContainer) {
+        console.error("CRITICAL ERROR: Cannot find Feed Elements in HTML. Check IDs.");
+    }
 
     if (sectorKey === 'dfw') {
         // --- DFW MODE: Video ON, Image OFF ---
