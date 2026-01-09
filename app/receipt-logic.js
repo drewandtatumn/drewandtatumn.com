@@ -1,7 +1,7 @@
 // app/receipt-logic.js
 // V2.0 - WITH COMPRESSION & DEBUGGING
 
-const WORKER_URL = "https://mgi-apps-core.drewandtatumn.workers.dev";
+const APP_WORKER_URL = "https://mgi-apps-core.drewandtatumn.workers.dev";
 
 // Global State
 let currentBase64Image = null;
@@ -70,7 +70,7 @@ async function processScan() {
     // alert("DEBUG: Sending to Cloudflare...");
 
     try {
-        const response = await fetch(WORKER_URL, {
+        const response = await fetch(APP_WORKER_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
