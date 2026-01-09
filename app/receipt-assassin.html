@@ -55,6 +55,12 @@
         }
         
         .scan-card.processing { border-left-color: #ffc107; }
+
+        .camera-btn i {
+            z-index: 2;
+            position: relative;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3); /* Slight shadow for visibility */
+        }
     </style>
 </head>
 <body>
@@ -106,18 +112,6 @@
                         </div>
 
                         <div id="scan-list">
-                            <div class="card bg-glass mb-2 scan-card">
-                                <div class="card-body p-2 d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="text-white m-0">SHELL STATION</h6>
-                                        <small class="text-secondary">Today, 8:45 AM</small>
-                                    </div>
-                                    <div class="text-end">
-                                        <div class="text-success fw-bold">$45.50</div>
-                                        <small class="text-secondary"><i class="fas fa-gas-pump"></i> Fuel</small>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
 
                     </div>
